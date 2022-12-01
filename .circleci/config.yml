@@ -120,7 +120,7 @@ jobs:
             fi
       - run:
           name: Archive dist code
-          command: tar -czvf << pipeline.parameters.distribution_archive >> << pipeline.parameters.distribution_source_dir >>
+          command: tar -czvf << pipeline.parameters.workspace_dir >>/<< pipeline.parameters.distribution_archive >> << pipeline.parameters.distribution_source_dir >>
       - persist_to_workspace:
           root: << pipeline.parameters.workspace_dir >>
           paths:

@@ -16,7 +16,6 @@
   "dependencies": {
     "config": "3.3.8",
     "cors": "2.8.5",
-    "debug": "2.6.9",
     "express": "4.16.1",
     "helmet": "6.0.0",
     "js-yaml": "4.1.0",

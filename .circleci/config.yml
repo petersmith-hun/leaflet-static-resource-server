@@ -1,0 +1,261 @@
+version: 2.1
+
+orbs:
+  jira: circleci/jira@1.1.2
+  node: circleci/node@5.0.3
+  jq: circleci/jq@2.2.0
+
+# Common parameters for CircleCI build config
+parameters:
+  app_name:
+    type: string
+    default: lsrs
+  release_tag_pattern:
+    type: string
+    default: 's/v[0-9]+\.[0-9]+\.[0-9]+\.([0-9]+)\.release/\1/'
+  distribution_archive:
+    type: string
+    default: leaflet-static-resource-server-release.tar.gz
+  distribution_source_dir:
+    type: string
+    default: dist/
+  workspace_dir:
+    type: string
+    default: /tmp/ws_store
+  version_file:
+    type: string
+    default: version
+
+# Reusable commands
+commands:
+
+  # Command definition for publishing GitHub releases/tags
+  github_release:
+    parameters:
+      release-type:
+        type: enum
+        default: "rc"
+        enum: ["rc", "release"]
+    steps:
+      - attach_workspace:
+          at: << pipeline.parameters.workspace_dir >>
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            [[ "<< parameters.release-type >>" = "release" ]] && VERSION_QUALIFIER=".release" || VERSION_QUALIFIER=""
+            VERSION=v$(cat << pipeline.parameters.workspace_dir >>/<< pipeline.parameters.version_file >>)$VERSION_QUALIFIER
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} << pipeline.parameters.workspace_dir >>/<< pipeline.parameters.distribution_archive >>
+
+jobs:
+
+  # Leaflet Static Resource Server - Build and test application
+  build:
+    parameters:
+      release-type:
+        type: enum
+        default: "rc"
+        enum: ["rc", "release"]
+    executor:
+      name: node/default
+      tag: '18.12'
+    steps:
+      - checkout
+      - run:
+          name: Set build number
+          command: |
+            case $CIRCLE_BRANCH in
+              master) echo 'export BUILD_NUMBER="rc.<< pipeline.number >>"' >> $BASH_ENV ;;
+              deploy) echo 'export BUILD_NUMBER=$((`git fetch --tags && git tag --sort=-taggerdate | grep release | sed -E "<< pipeline.parameters.release_tag_pattern >>" | sort -nr | head -n 1` + 1))' >> $BASH_ENV ;;
+              *) echo 'export BUILD_NUMBER="snapshot"' >> $BASH_ENV ;;
+            esac
+            source $BASH_ENV
+            echo "Determined BUILD_NUMBER=$BUILD_NUMBER"
+      - run:
+          name: Extract version number
+          command: |
+            source $BASH_ENV
+            BASE_VERSION=$(cat package.json | grep version | head -n 1 | sed -E "s/.*([0-9]+\.[0-9]+\.[0-9]+).*/\1/")
+            VERSION=$BASE_VERSION-$BUILD_NUMBER
+            echo "Extracted version $VERSION"
+            echo "export VERSION='$VERSION'" >> $BASH_ENV
+            mkdir << pipeline.parameters.workspace_dir >>
+            echo $VERSION >> << pipeline.parameters.workspace_dir >>/<< pipeline.parameters.version_file >>
+      - run:
+          name: Update project version
+          command: |
+            npm config set git-tag-version false
+            npm version $VERSION
+      - node/install-packages:
+          override-ci-command: npm install
+      - run:
+          name: Execute LSRS tests
+          command: |
+            mkdir logs
+            npm run test
+      - run:
+          name: Transpile code
+          command: npm run build
+      - run:
+          name: Clean-up node_modules
+          command: npm prune --omit=dev
+      - setup_remote_docker:
+          version: 20.10.18
+      - run:
+          name: Package and upload Docker image
+          command: |
+            source $BASH_ENV
+            
+            docker login ${LEAFLET_DOCKER_REGISTRY_HOST} \
+              --username ${LEAFLET_DOCKER_REGISTRY_USERNAME} \
+              --password ${LEAFLET_DOCKER_REGISTRY_PASSWORD}
+
+            version_tag=${LEAFLET_DOCKER_REGISTRY_HOST}/apps/<< pipeline.parameters.app_name >>:${VERSION}
+            docker build --tag $version_tag .
+            docker push $version_tag
+
+            if [[ "<< parameters.release-type >>" = "release" ]]; then
+              latest_tag=${LEAFLET_DOCKER_REGISTRY_HOST}/apps/<< pipeline.parameters.app_name >>:latest
+              docker tag $version_tag $latest_tag
+              docker push $latest_tag
+            fi
+      - run:
+          name: Archive dist code
+          command: tar -czvf << pipeline.parameters.distribution_archive >> << pipeline.parameters.distribution_source_dir >>
+      - persist_to_workspace:
+          root: << pipeline.parameters.workspace_dir >>
+          paths:
+            - << pipeline.parameters.distribution_archive >>
+            - << pipeline.parameters.version_file >>
+
+  # Leaflet Static Resource Server - Deploy to production
+  deploy:
+    docker:
+      - image: cimg/openjdk:11.0
+    steps:
+      - attach_workspace:
+          at: << pipeline.parameters.workspace_dir >>
+      - run:
+          command: echo 'export PROJECT_VERSION="$(cat << pipeline.parameters.workspace_dir >>/<< pipeline.parameters.version_file >>)"' >> $BASH_ENV
+          name: Set project version
+      - jq/install
+      - run:
+          command: |
+            set +e
+
+            oauth_token_response=${LEAFLET_CI_DOMINO_AUTH_TOKEN}
+            if ! [[ $oauth_token_response ]]
+            then
+                oauth_token_response=$(curl \
+                    --silent \
+                    --request POST "${LEAFLET_CI_DOMINO_OAUTH_TOKEN_ENDPOINT}" \
+                    --header "Authorization: Basic ${LEAFLET_CI_DOMINO_OAUTH_CLIENT_AUTH}" \
+                    --form "client_id=${LEAFLET_CI_DOMINO_OAUTH_CLIENT_ID}" \
+                    --form "scope=${LEAFLET_CI_DOMINO_OAUTH_SCOPE}" \
+                    --form "audience=${LEAFLET_CI_DOMINO_OAUTH_AUDIENCE}" \
+                    --form "grant_type=${LEAFLET_CI_DOMINO_OAUTH_GRANT_TYPE}" | jq -r '.access_token')
+            
+                if [[ $oauth_token_response == "null" ]]
+                then
+                  echo "Authorization failed" && exit 1
+                fi
+            fi
+
+            domino_deploy_response=$(curl \
+                 --silent --write-out "%{http_code}" --output /dev/null \
+                 --request PUT \
+                 --header "Authorization: Bearer $oauth_token_response" \
+                 "${LEAFLET_CI_DOMINO_HOST}/lifecycle/<< pipeline.parameters.app_name >>/deploy/${PROJECT_VERSION}")
+
+            case $domino_deploy_response in
+              201 | 202) echo "Domino deployment request was successful, deployment may continue" ;;
+              *) echo "Domino deployment request returned with status_code=$domino_deploy_response" && exit 1 ;;
+            esac
+
+            domino_start_response=$(curl \
+                 --silent --write-out "%{http_code}" --output /dev/null \
+                 --request PUT \
+                 --header "Authorization: Bearer $oauth_token_response" \
+                 "${LEAFLET_CI_DOMINO_HOST}/lifecycle/<< pipeline.parameters.app_name >>/start")
+
+            case $domino_start_response in
+              201 | 202) exit 0 ;;
+              *) echo "Domino application start request returned with status_code=$domino_start_response" && exit 1 ;;
+            esac
+
+          name: Instruct Domino to start deployment and spin up the application
+
+  # Leaflet Static Resource Server - Publish tag (and release) on GitHub for RC versions
+  publish-github-rc:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - github_release:
+          release-type: rc
+
+  # Leaflet Static Resource Server - Publish tag (and release) on GitHub for RELEASE versions
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - github_release:
+          release-type: release
+
+workflows:
+
+  leaflet-lsrs-rc:
+    jobs:
+
+      - build:
+          release-type: rc
+          context: leaflet_ci
+          filters:
+            branches:
+              only:
+                - master
+          post-steps:
+            - jira/notify:
+                environment_type: development
+                job_type: build
+
+      - publish-github-rc:
+          context: leaflet_ci
+          requires:
+            - build
+
+  leaflet-lsrs-release:
+    jobs:
+
+      - build:
+          release-type: release
+          context: leaflet_ci
+          filters:
+            branches:
+              only:
+                - deploy
+          post-steps:
+            - jira/notify:
+                environment_type: development
+                job_type: build
+
+      - deploy-approval:
+          context: leaflet_ci
+          type: approval
+          requires:
+            - build
+
+      - deploy:
+          context: leaflet_ci
+          requires:
+            - deploy-approval
+          post-steps:
+            - jira/notify:
+                environment_type: production
+                job_type: deployment
+
+      - publish-github-release:
+          context: leaflet_ci
+          requires:
+            - deploy
+
+  version: 2
+

@@ -10,6 +10,21 @@ lsrs:
     # Port to listen on
     port: 8083
 
+  # Database connection settings
+  datasource:
+
+    # Database URL
+    uri: <provide>
+
+    # Username
+    username: <provide>
+
+    # Password
+    password: <provide>
+
+    # Instruct Sequelize to log queries
+    logging: false
+
   # Actuator endpoint settings
   info:
 

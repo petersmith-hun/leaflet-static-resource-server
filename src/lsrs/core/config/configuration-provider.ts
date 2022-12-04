@@ -3,10 +3,11 @@ import {Service} from "typedi";
 
 type MapValue = string | number | boolean | object | undefined;
 type MapNode = Map<string, MapValue> | undefined;
-type ConfigNode = "server" | "info";
+type ConfigNode = "server" | "datasource" | "info";
 type ServerConfigKey = "host" | "port";
+type DatasourceConfigKey = "uri" | "username" | "password" | "logging";
 type ActuatorConfigKey = "appName" | "abbreviation";
-type ConfigKey = ServerConfigKey | ActuatorConfigKey;
+type ConfigKey = ServerConfigKey | DatasourceConfigKey | ActuatorConfigKey;
 
 /**
  * Application configuration parameters root.
@@ -14,10 +15,12 @@ type ConfigKey = ServerConfigKey | ActuatorConfigKey;
 export class ApplicationConfig {
 
     readonly server: ServerConfig;
+    readonly datasource: DatasourceConfig;
     readonly appInfo: AppInfoConfig;
 
     constructor(parameters: MapNode) {
         this.server = new ServerConfig(getNode(parameters, "server"));
+        this.datasource = new DatasourceConfig(getNode(parameters, "datasource"));
         this.appInfo = new AppInfoConfig(getNode(parameters, "info"));
     }
 }
@@ -33,6 +36,24 @@ export class ServerConfig {
     constructor(parameters: MapNode) {
         this.host = getValue(parameters, "host");
         this.port = getValue(parameters, "port");
+    }
+}
+
+/**
+ * Datasource configuration parameters.
+ */
+export class DatasourceConfig {
+
+    readonly uri: string;
+    readonly username: string;
+    readonly password: string;
+    readonly logging: boolean;
+
+    constructor(parameters: MapNode) {
+        this.uri = getValue(parameters, "uri");
+        this.username = getValue(parameters, "username");
+        this.password = getValue(parameters, "password");
+        this.logging = getValue(parameters, "logging", false);
     }
 }
 
@@ -78,6 +99,13 @@ export default class ConfigurationProvider {
      */
     public getServerConfig(): ServerConfig {
         return this.applicationConfig.server;
+    }
+
+    /**
+     * Returns the datasource configuration.
+     */
+    public getDatasourceConfig(): DatasourceConfig {
+        return this.applicationConfig.datasource;
     }
 
     /**

@@ -2,6 +2,10 @@ lsrs:
   server:
     host: 127.0.0.1
     port: 9998
+  datasource:
+    uri: "sqlite::memory:"
+    username: testuser
+    password: testpass1
   info:
     appName: "[TEST] Leaflet Static Resource Server"
     abbreviation: TEST-LSRS

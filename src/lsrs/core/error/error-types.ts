@@ -13,7 +13,17 @@ export class GenericError extends Error {
  */
 export class ResourceNotFoundError extends GenericError {
 
-    constructor(resourceType: object, id: any) {
-        super(`Entity of ${resourceType.constructor.name} identified by ${id} is not found`);
+    constructor(resourceType: new () => any, id: any) {
+        super(`Entity of type ${resourceType.name} identified by ${id} is not found`);
+    }
+}
+
+/**
+ * Error to be thrown when a record to be written into the database conflicts with an existing one.
+ */
+export class ConflictingResourceError extends GenericError {
+
+    constructor(resourceType: new () => any, id: any) {
+        super(`Entity of type ${resourceType.name} identified by ${id} already exists`);
     }
 }

@@ -87,6 +87,7 @@ jobs:
             npm version $VERSION
       - node/install-packages:
           override-ci-command: npm install
+          with-cache: false
       - run:
           name: Execute LSRS tests
           command: |

@@ -22,7 +22,7 @@ describe("Unit tests for FileStorageConfiguration", () => {
 
             // given
             mockfs({
-                "/tmp": mockfs.directory({mode: 0o777})
+                "/tmp": {}
             });
 
             // when

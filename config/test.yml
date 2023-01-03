@@ -10,7 +10,7 @@ lsrs:
   storage:
     upload-path: /tmp/storage
     max-age-in-days: 365
-    permission: 744
+    permission: "0744"
     acceptors:
       - accepted-as: image
         group-root-directory: images

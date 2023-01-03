@@ -96,7 +96,7 @@ export class StorageConfig {
 
     readonly uploadPath: string;
     readonly maxAgeInDays: number;
-    readonly permission: number;
+    readonly permission: string;
     readonly acceptors: Acceptor[];
 
     constructor(parameters: MapNode) {

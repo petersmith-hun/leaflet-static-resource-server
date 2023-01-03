@@ -35,7 +35,7 @@ lsrs:
     max-age-in-days: 365
 
     # Default file permission to be set on upload
-    permission: 744
+    permission: "0744"
 
     # File type acceptor definitions
     acceptors:

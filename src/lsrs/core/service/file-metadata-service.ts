@@ -34,7 +34,7 @@ export default class FileMetadataService {
             throw new ResourceNotFoundError(UploadedFile, pathUUID);
         }
 
-        return Promise.resolve(uploadedFile.dataValues);
+        return uploadedFile.dataValues;
     }
 
     /**
@@ -56,7 +56,7 @@ export default class FileMetadataService {
             }
         }
 
-        return Promise.resolve(storedUploadedFile.id);
+        return storedUploadedFile.id;
     }
 
     /**

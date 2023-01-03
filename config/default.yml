@@ -25,6 +25,31 @@ lsrs:
     # Instruct Sequelize to log queries
     logging: false
 
+  # Storage settings
+  storage:
+
+    # File storage root path
+    upload-path: /tmp/storage
+
+    # Maximum age of cached downloaded file
+    max-age-in-days: 365
+
+    # Default file permission to be set on upload
+    permission: 744
+
+    # File type acceptor definitions
+    acceptors:
+
+        # Acceptor ID
+      - accepted-as: image
+
+        # Name of the acceptor root folder
+        group-root-directory: images
+
+        # MIME types to be accepted by this acceptor
+        accepted-mime-types:
+          - image/*
+
   # Actuator endpoint settings
   info:
 

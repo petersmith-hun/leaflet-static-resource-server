@@ -230,6 +230,7 @@ describe("Unit tests for FileManagementService", () => {
             pathUtility.normalizePath.withArgs("sub2").returns("sub2");
             pathUtility.normalizePath.withArgs("sub3").returns("sub3");
             pathUtility.normalizePath.withArgs("sub2\\sub4").returns("sub2/sub4");
+            pathUtility.normalizePath.withArgs("sub2/sub4").returns("sub2/sub4");
 
             // when
             const result = fileManagementService.getAcceptorInfo();

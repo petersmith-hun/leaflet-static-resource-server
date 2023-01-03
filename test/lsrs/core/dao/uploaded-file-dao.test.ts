@@ -10,7 +10,7 @@ describe("Integration tests for UploadedFileDAO", () => {
     let uploadedFileDAO: UploadedFileDAO;
 
     beforeAll(async () => {
-        new DatasourceConfiguration(new ConfigurationProvider());
+        new DatasourceConfiguration(new ConfigurationProvider()).init();
         uploadedFileDAO = new UploadedFileDAO();
         await UploadedFile.sync();
     });

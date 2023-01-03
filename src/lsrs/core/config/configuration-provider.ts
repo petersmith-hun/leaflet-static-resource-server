@@ -1,13 +1,17 @@
 import config from "config";
 import {Service} from "typedi";
+import {FileInput, MIMEType} from "../model/file-input";
 
 type MapValue = string | number | boolean | object | undefined;
 type MapNode = Map<string, MapValue> | undefined;
-type ConfigNode = "server" | "datasource" | "info";
+type ConfigNode = "server" | "datasource" | "storage" | "info";
 type ServerConfigKey = "host" | "port";
 type DatasourceConfigKey = "uri" | "username" | "password" | "logging";
+type StorageConfigKey = "upload-path" | "max-age-in-days" | "permission" | "acceptors"
+type AcceptorConfigKey = "accepted-as" | "group-root-directory" | "accepted-mime-types"
+type AcceptorConfigNode = { [Key in AcceptorConfigKey]: string | string[] };
 type ActuatorConfigKey = "appName" | "abbreviation";
-type ConfigKey = ServerConfigKey | DatasourceConfigKey | ActuatorConfigKey;
+type ConfigKey = ServerConfigKey | DatasourceConfigKey | StorageConfigKey | AcceptorConfigKey | ActuatorConfigKey;
 
 /**
  * Application configuration parameters root.
@@ -16,11 +20,13 @@ export class ApplicationConfig {
 
     readonly server: ServerConfig;
     readonly datasource: DatasourceConfig;
+    readonly storage: StorageConfig;
     readonly appInfo: AppInfoConfig;
 
     constructor(parameters: MapNode) {
         this.server = new ServerConfig(getNode(parameters, "server"));
         this.datasource = new DatasourceConfig(getNode(parameters, "datasource"));
+        this.storage = new StorageConfig(getNode(parameters, "storage"));
         this.appInfo = new AppInfoConfig(getNode(parameters, "info"));
     }
 }
@@ -58,6 +64,51 @@ export class DatasourceConfig {
 }
 
 /**
+ * Acceptor configuration.
+ */
+export class Acceptor {
+
+    readonly acceptedAs: string;
+    readonly groupRootDirectory: string;
+    readonly acceptedMIMETypes: MIMEType[];
+
+    constructor(parameters: AcceptorConfigNode) {
+        this.acceptedAs = getAcceptorValue(parameters, "accepted-as");
+        this.groupRootDirectory = getAcceptorValue(parameters, "group-root-directory");
+        this.acceptedMIMETypes = (getAcceptorValue(parameters, "accepted-mime-types") as string[])
+            .map(mime => new MIMEType(mime));
+    }
+
+    /**
+     * Attempts accepting a given file by its MIME type.
+     *
+     * @param fileInput FileInput object containing information about the file to be uploaded
+     */
+    accept(fileInput: FileInput): boolean {
+        return this.acceptedMIMETypes.some(mime => mime.isCompatibleWith(fileInput.contentType));
+    }
+}
+
+/**
+ * Storage config parameters.
+ */
+export class StorageConfig {
+
+    readonly uploadPath: string;
+    readonly maxAgeInDays: number;
+    readonly permission: number;
+    readonly acceptors: Acceptor[];
+
+    constructor(parameters: MapNode) {
+        this.uploadPath = getValue(parameters, "upload-path");
+        this.maxAgeInDays = getValue(parameters, "max-age-in-days");
+        this.permission = getValue(parameters, "permission");
+        this.acceptors = (getValue(parameters, "acceptors") as Array<AcceptorConfigNode>)
+            .map(acceptor => new Acceptor(acceptor));
+    }
+}
+
+/**
  * Application info config parameters;
  */
 export class AppInfoConfig {
@@ -79,6 +130,10 @@ function getValue<Type>(parameters: MapNode, key: ConfigKey, defaultValue: strin
     return (parameters?.has(key)
         ? parameters.get(key)
         : defaultValue) as Type;
+}
+
+function getAcceptorValue<Type>(parameters: AcceptorConfigNode, key: AcceptorConfigKey): Type {
+    return parameters[key] as Type;
 }
 
 /**
@@ -106,6 +161,13 @@ export default class ConfigurationProvider {
      */
     public getDatasourceConfig(): DatasourceConfig {
         return this.applicationConfig.datasource;
+    }
+
+    /**
+     * Returns the storage configuration.
+     */
+    public getStorageConfig(): StorageConfig {
+        return this.applicationConfig.storage;
     }
 
     /**

@@ -6,6 +6,21 @@ lsrs:
     uri: "sqlite::memory:"
     username: testuser
     password: testpass1
+    logging: false
+  storage:
+    upload-path: /tmp/storage
+    max-age-in-days: 365
+    permission: 744
+    acceptors:
+      - accepted-as: image
+        group-root-directory: images
+        accepted-mime-types:
+          - image/*
+      - accepted-as: other
+        group-root-directory: files
+        accepted-mime-types:
+          - application/octet-stream
+          - application/pdf
   info:
     appName: "[TEST] Leaflet Static Resource Server"
     abbreviation: TEST-LSRS

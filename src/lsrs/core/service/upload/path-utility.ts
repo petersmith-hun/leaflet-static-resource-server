@@ -11,6 +11,7 @@ import {FileInput} from "../../model/file-input";
 export default class PathUtility {
 
     private readonly pathNormalizationPattern = new RegExp("\\\\", "g");
+    private readonly filenameCleaningPattern = new RegExp(' ', 'g');
     private readonly storageConfig: StorageConfig;
 
     constructor(configurationProvider: ConfigurationProvider) {
@@ -31,7 +32,7 @@ export default class PathUtility {
         return removeAccents(fileInput.originalFilename)
             .toLowerCase()
             .trim()
-            .replace(new RegExp(' ', 'g'), '_');
+            .replace(this.filenameCleaningPattern, '_');
     }
 
     /**

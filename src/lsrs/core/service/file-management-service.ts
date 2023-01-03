@@ -14,7 +14,6 @@ import PathUtility from "./upload/path-utility";
 /**
  * Service to handle file operations.
  * Supports uploading new files and retrieve existing ones.
- * Also handles storage status information management in database.
  */
 @Service()
 export default class FileManagementService {

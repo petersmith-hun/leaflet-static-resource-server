@@ -30,7 +30,7 @@ export default class FileStorageConfiguration implements Configuration {
         this.attachAcceptorRoots(storageRootPath, permission, this.storageConfig.acceptors);
     }
 
-    private attachStorageRoot(uploadPath: string, permission: number, description: string = 'storage root') {
+    private attachStorageRoot(uploadPath: string, permission: string, description: string = 'storage root') {
 
         this.ensureStorageRoot(uploadPath, permission, description);
         this.ensureAccess(uploadPath, description);
@@ -38,12 +38,12 @@ export default class FileStorageConfiguration implements Configuration {
         this.logger.info(`Directory ${description} attached at ${uploadPath}`);
     }
 
-    private ensureStorageRoot(uploadPath: string, permission: number, description: string) {
+    private ensureStorageRoot(uploadPath: string, permission: string, description: string) {
 
         if (!fs.existsSync(uploadPath)) {
             this.logger.warn(`Directory ${description} does not exist. Trying to create...`);
             try {
-                fs.mkdirSync(uploadPath, permission);
+                fs.mkdirSync(uploadPath, {mode: permission});
                 this.logger.info(`Directory ${description} created at ${uploadPath}`);
             } catch (error) {
                 this.logger.error(`Failed to create ${description}: ${error}`);
@@ -62,7 +62,7 @@ export default class FileStorageConfiguration implements Configuration {
         }
     }
 
-    private attachAcceptorRoots(storageRootPath: string, permission: number, acceptors: Acceptor[]) {
+    private attachAcceptorRoots(storageRootPath: string, permission: string, acceptors: Acceptor[]) {
 
         acceptors.forEach(acceptor => {
             const description = `acceptor root '${acceptor.acceptedAs}'`;

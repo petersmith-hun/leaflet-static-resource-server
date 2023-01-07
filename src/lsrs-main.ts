@@ -8,12 +8,14 @@ import {Configuration} from "./lsrs/helper/common-utilities";
 import {ConfigurationToken, ExpressToken, VersionToken} from "./lsrs/helper/typedi-tokens";
 import LeafletStaticResourceServerApplication from "./lsrs/leaflet-static-resource-server-application";
 import ActuatorController from "./lsrs/web/controller/actuator-controller";
+import FilesController from "./lsrs/web/controller/files-controller";
 
 Container.set<Express>(ExpressToken, express());
 Container.set<string>(VersionToken, version);
 
 Container.import([
     ActuatorController,
+    FilesController,
     DatasourceConfiguration,
     FileStorageConfiguration
 ]);

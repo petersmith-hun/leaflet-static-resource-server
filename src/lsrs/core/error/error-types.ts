@@ -41,6 +41,6 @@ export class ConflictingResourceError extends GenericError {
 /**
  * Error to be thrown when the file to be uploaded violates validation rules.
  */
-export class InvalidFileInput extends GenericError {
+export class InvalidFileInputError extends GenericError {
 
 }

@@ -5,7 +5,7 @@ import {FileInput, MIMEType} from "../model/file-input";
 type MapValue = string | number | boolean | object | undefined;
 type MapNode = Map<string, MapValue> | undefined;
 type ConfigNode = "server" | "datasource" | "storage" | "info";
-type ServerConfigKey = "host" | "port";
+type ServerConfigKey = "context-path" | "host" | "port";
 type DatasourceConfigKey = "uri" | "username" | "password" | "logging";
 type StorageConfigKey = "upload-path" | "max-age-in-days" | "permission" | "acceptors"
 type AcceptorConfigKey = "accepted-as" | "group-root-directory" | "accepted-mime-types"
@@ -36,10 +36,12 @@ export class ApplicationConfig {
  */
 export class ServerConfig {
 
+    readonly contextPath: string;
     readonly host: string;
     readonly port: number;
 
     constructor(parameters: MapNode) {
+        this.contextPath = getValue(parameters, "context-path", "/");
         this.host = getValue(parameters, "host");
         this.port = getValue(parameters, "port");
     }

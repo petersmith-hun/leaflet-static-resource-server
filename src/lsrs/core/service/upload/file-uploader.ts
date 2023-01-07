@@ -59,7 +59,7 @@ export default class FileUploader {
         const fileRelativePath = this.pathUtility.createFileRelativePath(acceptor, fileInput, targetFilename);
         const fileAbsolutePath = this.pathUtility.createFileAbsolutePath(fileRelativePath);
 
-        fs.writeFileSync(fileAbsolutePath, Buffer.from(fileInput.fileContentStream));
+        fs.writeFileSync(fileAbsolutePath, fileInput.fileContentStream);
 
         this.logger.info(`Successfully uploaded and stored file ${fileInput.originalFilename} under ${fileRelativePath}`);
 

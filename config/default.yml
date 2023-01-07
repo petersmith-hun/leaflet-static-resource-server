@@ -4,6 +4,9 @@ lsrs:
   # Server settings
   server:
 
+    # Server context path (API base path)
+    context-path: /lsrs
+
     # Server address to listen on
     host: 0.0.0.0
 

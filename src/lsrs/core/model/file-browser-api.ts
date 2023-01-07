@@ -15,7 +15,7 @@ export interface AcceptorInfo {
  */
 export interface DownloadableFileWrapper {
 
-    fileContent: ArrayBuffer;
+    fileContent: Buffer;
     originalFilename: string;
     mimeType: string;
     length: number;

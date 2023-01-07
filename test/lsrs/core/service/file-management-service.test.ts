@@ -2,7 +2,7 @@ import * as fs from "fs";
 import {default as mockfs} from "mock-fs";
 import sinon, {SinonStubbedInstance} from "sinon";
 import ConfigurationProvider from "../../../../src/lsrs/core/config/configuration-provider";
-import {InaccessibleFileError, InvalidFileInput} from "../../../../src/lsrs/core/error/error-types";
+import {InaccessibleFileError, InvalidFileInputError} from "../../../../src/lsrs/core/error/error-types";
 import FileManagementService from "../../../../src/lsrs/core/service/file-management-service";
 import FileUploader from "../../../../src/lsrs/core/service/upload/file-uploader";
 import PathUtility from "../../../../src/lsrs/core/service/upload/path-utility";
@@ -70,7 +70,7 @@ describe("Unit tests for FileManagementService", () => {
 
             // then
             // exception expected
-            expect(failingCall).toThrow(InvalidFileInput);
+            expect(failingCall).toThrow(InvalidFileInputError);
 
             sinon.assert.notCalled(fileUploader.upload);
         });
@@ -85,7 +85,7 @@ describe("Unit tests for FileManagementService", () => {
 
             // then
             // exception expected
-            expect(failingCall).toThrow(InvalidFileInput);
+            expect(failingCall).toThrow(InvalidFileInputError);
         });
     });
 

@@ -1,9 +1,10 @@
-import {AcceptorInfo} from "../../../../src/lsrs/core/model/file-browser-api";
+import {AcceptorInfo, DownloadableFileWrapper} from "../../../../src/lsrs/core/model/file-browser-api";
 import {FileInput, MIMEType} from "../../../../src/lsrs/core/model/file-input";
 import {
     UploadedFileCreateAttributes,
     UploadedFileUpdateAttributes
 } from "../../../../src/lsrs/core/model/uploaded-file";
+import {uploadedFile1} from "../dao/uploaded-file-dao.testdata";
 
 export const fileBuffer: Buffer = Buffer.alloc(10, "*");
 
@@ -11,9 +12,9 @@ export const fileInput: FileInput = {
 
     contentType: new MIMEType("image/png"),
     description: "test image",
-    fileContentStream: fileBuffer.buffer,
+    fileContentStream: fileBuffer,
     originalFilename: "Test Image.png",
-    relativePath: "/images/test_image.png",
+    relativePath: "",
     size: 10
 };
 
@@ -47,4 +48,11 @@ export const acceptorInfo2: AcceptorInfo = {
     childrenDirectories: ["sub3"],
     id: "other",
     rootDirectoryName: "files"
+}
+
+export const downloadableFileWrapper: DownloadableFileWrapper = {
+    originalFilename: uploadedFile1.originalFilename!,
+    mimeType: uploadedFile1.acceptedAs,
+    length: fileBuffer.length,
+    fileContent: fileBuffer
 }

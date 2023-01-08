@@ -27,14 +27,14 @@ describe("Unit tests for ActuatorController", () => {
 
     describe("Test scenarios for #info", () => {
 
-        it("should return app info with OK status", () => {
+        it("should return app info with OK status", async () => {
 
             // given
             Container.set(VersionToken, version);
             const expectedResponse = new InfoResponse(appName, abbreviation, version);
 
             // when
-            const result = actuatorController.info();
+            const result = await actuatorController.info();
 
             // then
             expect(result).not.toBeNull();
@@ -45,24 +45,24 @@ describe("Unit tests for ActuatorController", () => {
 
     describe("Test scenarios for #health", () => {
 
-        it("should return app health with OK status", () => {
+        it("should return app health with OK status", async () => {
 
             // when
-            const result = actuatorController.health();
+            const result = await actuatorController.health();
 
             // then
             expect(result).not.toBeNull();
             expect(result.status).toBe(HttpStatus.OK);
-            expect(result.content.status).toStrictEqual("UP");
+            expect(result.content!.status).toStrictEqual("UP");
         });
     });
 
     describe("Test scenarios for #controllerType", () => {
 
-        it("should return ControllerType.ACTUATOR", () => {
+        it("should return ControllerType.ACTUATOR", async () => {
 
             // when
-            const result = actuatorController.controllerType();
+            const result = await actuatorController.controllerType();
 
             // then
             expect(result).toBe(ControllerType.ACTUATOR);

@@ -1,52 +1,55 @@
-import {Express, Request, Response} from "express";
+import express from "express";
 import sinon, {SinonStub, SinonStubbedInstance} from "sinon";
 import {GenericError} from "../../../src/lsrs/core/error/error-types";
 import ControllerRegistration from "../../../src/lsrs/web/controller-registration";
 import ActuatorController from "../../../src/lsrs/web/controller/actuator-controller";
 import {ControllerType} from "../../../src/lsrs/web/controller/controller";
-import {HealthResponse, InfoResponse} from "../../../src/lsrs/web/model/actuator";
-import {HttpStatus, ResponseWrapper} from "../../../src/lsrs/web/model/common";
+import FilesController from "../../../src/lsrs/web/controller/files-controller";
+import {ParameterizedMappingHelper, ParameterlessMappingHelper} from "../../../src/lsrs/web/utility/mapping-helper";
 
 describe("Unit tests for ControllerRegistration", () => {
 
-    let requestMock: SinonStubbedInstance<Request>;
-    let responseMock: SinonStubbedInstance<Response>;
-    let expressMock: SinonStubbedInstance<Express>;
     let actuatorControllerMock: SinonStubbedInstance<ActuatorController>;
+    let filesControllerMock: SinonStubbedInstance<FilesController>;
     let controllerRegistration: ControllerRegistration;
 
     beforeEach(() => {
 
-        requestMock = (sinon.createStubInstance(RequestStub) as unknown) as SinonStubbedInstance<Request>;
-        responseMock = (sinon.createStubInstance(ResponseStub) as unknown) as SinonStubbedInstance<Response>;
-        expressMock = (sinon.createStubInstance(ExpressStub) as unknown) as SinonStubbedInstance<Express>;
         actuatorControllerMock = sinon.createStubInstance(ActuatorController);
-        actuatorControllerMock.controllerType.returns(ControllerType.ACTUATOR);
+        actuatorControllerMock.controllerType.returns(ControllerType.ACTUATOR)
+        filesControllerMock = sinon.createStubInstance(FilesControllerStub) as unknown as SinonStubbedInstance<FilesController>;
+        filesControllerMock.controllerType.returns(ControllerType.FILES);
 
-        controllerRegistration = new ControllerRegistration([actuatorControllerMock]);
+        controllerRegistration = new ControllerRegistration([actuatorControllerMock, filesControllerMock]);
     });
 
     describe("Test scenarios for #registerRoutes", () => {
 
-        it("should register routes in Express", () => {
+        it("should register routes in Express", async () => {
 
             // given
-            const infoResponse = new InfoResponse("app1", "app", "1.0.0");
-            const healthResponse = new HealthResponse();
-            const infoResponseResponseWrapper = new ResponseWrapper(HttpStatus.OK, infoResponse);
-            const healthResponseResponseWrapper = new ResponseWrapper(HttpStatus.OK, healthResponse);
-
-            expressMock.get.returns(expressMock);
-            responseMock.status.returns(responseMock);
-            actuatorControllerMock.info.returns(infoResponseResponseWrapper);
-            actuatorControllerMock.health.returns(healthResponseResponseWrapper);
+            // @ts-ignore
+            sinon.replace(express, "Router", sinon.fake(() => new RouterStub()));
+            const parameterlessHelperStub = sinon.stub(ParameterlessMappingHelper.prototype, "register").returnsArg(0);
+            const parameterizedHelperStub = sinon.stub(ParameterizedMappingHelper.prototype, "register").returnsArg(0);
 
             // when
-            controllerRegistration.registerRoutes(expressMock);
+            const result = controllerRegistration.registerRoutes() as unknown as RouterStub;
 
             // then
-            _assertControllerRegistered(expressMock.get, "/lsrs/actuator/info", actuatorControllerMock.info, infoResponseResponseWrapper);
-            _assertControllerRegistered(expressMock.get, "/lsrs/actuator/health", actuatorControllerMock.health, healthResponseResponseWrapper);
+            await _assertRegistration(result, "get", "/actuator", "/info", actuatorControllerMock.info);
+            await _assertRegistration(result, "get", "/actuator", "/health", actuatorControllerMock.health);
+            await _assertRegistration(result, "get", "/files", "/", filesControllerMock.getUploadedFiles);
+            await _assertRegistration(result, "post", "/files", "/", filesControllerMock.uploadFile, 2);
+            await _assertRegistration(result, "get", "/files", "/directories", filesControllerMock.getDirectories);
+            await _assertRegistration(result, "post", "/files", "/directories", filesControllerMock.createDirectory);
+            await _assertRegistration(result, "get", "/files", "/:pathUUID", filesControllerMock.getFileDetails);
+            await _assertRegistration(result, "put", "/files", "/:pathUUID", filesControllerMock.updateFileMetaInfo);
+            await _assertRegistration(result, "delete", "/files", "/:pathUUID", filesControllerMock.deleteFile);
+            await _assertRegistration(result, "get", "/files", "/:pathUUID/:storedFilename", filesControllerMock.download);
+
+            parameterlessHelperStub.restore();
+            parameterizedHelperStub.restore();
         });
 
         it("should registration fail due to unknown controller", () => {
@@ -55,7 +58,7 @@ describe("Unit tests for ControllerRegistration", () => {
             controllerRegistration = new ControllerRegistration([]);
 
             // when
-            const failingCall = () => controllerRegistration.registerRoutes(expressMock);
+            const failingCall = () => controllerRegistration.registerRoutes();
 
             // then
             // error expected
@@ -63,57 +66,80 @@ describe("Unit tests for ControllerRegistration", () => {
         });
     });
 
-    function _assertControllerRegistered(expectedExpressCall: SinonStub, controllerPath: string, controllerMock: SinonStub, expectedResponse: ResponseWrapper<any>) {
+    async function _assertRegistration(router: RouterStub, method: string, controller: string, path: string, controllerMock: SinonStub, numberOfHandlers: number = 1) {
 
-        let callArgs: ExpressRegistration | null = _extractCall(expectedExpressCall, controllerPath);
-        expect(callArgs).not.toBeNull();
-        _assertController(callArgs!.controllerFunction, controllerMock, expectedResponse);
-    }
+        const controllerGroup = router.root.get(controller);
+        const endpoint = controllerGroup!.endpoints.find(endpoint => endpoint[0] == method && endpoint[1] == path);
 
-    function _extractCall(expectedExpressCall: SinonStub, controllerPath: string): ExpressRegistration | null {
+        expect(endpoint).not.toBeUndefined();
 
-        for (let index = 0; index < expectedExpressCall.callCount; index++) {
-            let currentCallArgs = new ExpressRegistration(expectedExpressCall.getCall(index).args);
-            if (currentCallArgs.path === controllerPath) {
-                return currentCallArgs;
-            }
-        }
+        const handlers = endpoint.slice(2);
 
-        return null;
-    }
+        expect(handlers.length).toBe(numberOfHandlers);
 
-    function _assertController(callArgs: ExpressControllerFunction, controllerMock: SinonStub, expectedResponse: ResponseWrapper<any>) {
+        handlers.pop()();
 
-        callArgs(requestMock, responseMock);
+        await controllerMock.resolves();
         expect(controllerMock.called).toBe(true);
-        sinon.assert.calledWith(responseMock.status, expectedResponse.status);
-        sinon.assert.calledWith(responseMock.json, expectedResponse.content);
         controllerMock.reset();
     }
 });
 
-class ExpressStub {
-    get(): any {}
-}
+class RouterStub {
 
-class ResponseStub {
-    status(status: number): any {}
-    json(content: any): any {}
-}
+    endpoints: any[] = [];
+    root: Map<string, RouterStub> = new Map<string, RouterStub>();
 
-class RequestStub {
-    get(): any {}
-}
+    currentPrefix: string | null = null;
 
-type ExpressControllerFunction = (request: Request, response: Response) => void;
-
-class ExpressRegistration {
-
-    path: string;
-    controllerFunction: ExpressControllerFunction;
-
-    constructor(callArgs: any[]) {
-        this.path = callArgs[0];
-        this.controllerFunction = callArgs[1];
+    get(...args: any[]) {
+        this.handleCall(args, "get");
+        return this;
     }
+
+    post(...args: any[]) {
+        this.handleCall(args, "post");
+        return this;
+    }
+
+    put(...args: any[]) {
+        this.handleCall(args, "put");
+        return this;
+    }
+
+    delete(...args: any[]) {
+        this.handleCall(args, "delete");
+        return this;
+    }
+
+    route(route: string) {
+        this.currentPrefix = route;
+        return this;
+    }
+
+    use(path: string, router: any) {
+        this.root.set(path, router);
+        return this;
+    }
+
+    private handleCall(args: any[], method: string) {
+
+        if (this.currentPrefix) {
+            args.unshift(this.currentPrefix);
+        }
+        args.unshift(method);
+        this.endpoints.push(args);
+    }
+}
+
+class FilesControllerStub {
+    async getUploadedFiles(): Promise<void> {}
+    async download(): Promise<void> {}
+    async getFileDetails(): Promise<void> {}
+    async getDirectories(): Promise<void> {}
+    async uploadFile(): Promise<void> {}
+    async createDirectory(): Promise<void> {}
+    async updateFileMetaInfo(): Promise<void> {}
+    async deleteFile(): Promise<void> {}
+    controllerType(): any {};
 }

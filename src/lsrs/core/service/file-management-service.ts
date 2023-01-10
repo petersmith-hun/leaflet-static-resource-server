@@ -4,7 +4,7 @@ import {Logger} from "tslog";
 import {Service} from "typedi";
 import LoggerFactory from "../../helper/logger-factory";
 import ConfigurationProvider, {Acceptor} from "../config/configuration-provider";
-import {InaccessibleFileError, InvalidFileInput} from "../error/error-types";
+import {InaccessibleFileError, InvalidFileInputError} from "../error/error-types";
 import {AcceptorInfo} from "../model/file-browser-api";
 import {FileInput} from "../model/file-input";
 import {UploadedFileCreateAttributes} from "../model/uploaded-file";
@@ -44,7 +44,7 @@ export default class FileManagementService {
         const uploadedFile = this.fileUploader.upload(fileInput);
         if (!uploadedFile) {
             this.logger.error(`No acceptor for MIME [${fileInput.contentType}] found to upload file [${fileInput.originalFilename}]`);
-            throw new InvalidFileInput("No acceptor found to upload file");
+            throw new InvalidFileInputError("No acceptor found to upload file");
         }
 
         return uploadedFile;
@@ -118,9 +118,9 @@ export default class FileManagementService {
         return this.acceptors.map((acceptor) => {
             return {
                 id: acceptor.acceptedAs,
-                rootDirectoryName: acceptor.groupRootDirectory,
+                root: acceptor.groupRootDirectory,
                 acceptableMimeTypes: acceptor.acceptedMIMETypes.map(mime => mime.toString()),
-                childrenDirectories: this.getChildrenDirectories(acceptor)
+                children: this.getChildrenDirectories(acceptor)
             }
         });
     }
@@ -128,7 +128,7 @@ export default class FileManagementService {
     private assertFileSize(fileInput: FileInput): void {
 
         if (fileInput.size <= 0) {
-            throw new InvalidFileInput("File must not be empty");
+            throw new InvalidFileInputError("File must not be empty");
         }
     }
 

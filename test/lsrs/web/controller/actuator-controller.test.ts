@@ -53,7 +53,7 @@ describe("Unit tests for ActuatorController", () => {
             // then
             expect(result).not.toBeNull();
             expect(result.status).toBe(HttpStatus.OK);
-            expect(result.content.status).toStrictEqual("UP");
+            expect(result.content!.status).toStrictEqual("UP");
         });
     });
 

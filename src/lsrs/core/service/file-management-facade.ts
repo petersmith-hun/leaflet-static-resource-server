@@ -58,7 +58,7 @@ export default class FileManagementFacade {
             originalFilename: uploadedFile.originalFilename!,
             mimeType: uploadedFile.acceptedAs,
             length: fileContent.length,
-            fileContent: fileContent.buffer
+            fileContent: fileContent
         }
     }
 

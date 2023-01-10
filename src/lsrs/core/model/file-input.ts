@@ -6,7 +6,7 @@ export interface FileInput {
     originalFilename: string;
     contentType: MIMEType;
     size: number;
-    fileContentStream: ArrayBuffer;
+    fileContentStream: Buffer;
     relativePath?: string;
     description: string;
 }

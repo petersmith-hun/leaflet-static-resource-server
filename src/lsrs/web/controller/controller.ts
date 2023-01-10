@@ -15,5 +15,6 @@ export interface Controller {
  * Supported controller types (endpoint groups).
  */
 export enum ControllerType {
-    ACTUATOR = "actuator"
+    ACTUATOR = "actuator",
+    FILES = "files"
 }

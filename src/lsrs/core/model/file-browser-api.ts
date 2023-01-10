@@ -4,8 +4,8 @@
 export interface AcceptorInfo {
 
     id: string;
-    rootDirectoryName: string;
-    childrenDirectories: string[];
+    root: string;
+    children: string[];
     acceptableMimeTypes: string[];
 }
 
@@ -15,7 +15,7 @@ export interface AcceptorInfo {
  */
 export interface DownloadableFileWrapper {
 
-    fileContent: ArrayBuffer;
+    fileContent: Buffer;
     originalFilename: string;
     mimeType: string;
     length: number;

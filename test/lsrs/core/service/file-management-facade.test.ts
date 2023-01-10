@@ -59,7 +59,7 @@ describe("Unit tests for FileManagementFacade", () => {
                 originalFilename: uploadedFile1.originalFilename,
                 mimeType: uploadedFile1.acceptedAs,
                 length: fileBuffer.length,
-                fileContent: fileBuffer.buffer
+                fileContent: fileBuffer
             });
 
             sinon.assert.calledWith(fileMetadataService.retrieveMetadata, uploadedFile1.pathUUID);

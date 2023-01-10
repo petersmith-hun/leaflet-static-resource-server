@@ -118,9 +118,9 @@ export default class FileManagementService {
         return this.acceptors.map((acceptor) => {
             return {
                 id: acceptor.acceptedAs,
-                rootDirectoryName: acceptor.groupRootDirectory,
+                root: acceptor.groupRootDirectory,
                 acceptableMimeTypes: acceptor.acceptedMIMETypes.map(mime => mime.toString()),
-                childrenDirectories: this.getChildrenDirectories(acceptor)
+                children: this.getChildrenDirectories(acceptor)
             }
         });
     }

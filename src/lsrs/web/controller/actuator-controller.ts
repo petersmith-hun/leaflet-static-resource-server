@@ -25,7 +25,7 @@ export default class ActuatorController implements Controller {
      *
      * @returns application info as InfoResponse wrapped in ResponseWrapper
      */
-    public async info(): Promise<ResponseWrapper<InfoResponse>> {
+    public info(): ResponseWrapper<InfoResponse> {
 
         if (!this.infoResponse) {
             this.infoResponse = this.createInfoResponse();
@@ -41,7 +41,7 @@ export default class ActuatorController implements Controller {
      *
      * @returns application health status as HealthResponse wrapped in ResponseWrapper
      */
-    public async health(): Promise<ResponseWrapper<HealthResponse>> {
+    public health(): ResponseWrapper<HealthResponse> {
         return new ResponseWrapper(HttpStatus.OK, new HealthResponse());
     }
 

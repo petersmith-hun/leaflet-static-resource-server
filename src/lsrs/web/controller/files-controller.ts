@@ -4,12 +4,7 @@ import {ResourceNotFoundError} from "../../core/error/error-types";
 import {UploadedFile} from "../../core/model/uploaded-file";
 import FileManagementFacade from "../../core/service/file-management-facade";
 import {ControllerToken} from "../../helper/typedi-tokens";
-import {
-    convertAcceptor,
-    convertMetadataUpdateRequest,
-    convertUploadedFile,
-    convertUploadRequest
-} from "../converter/converters";
+import {convertMetadataUpdateRequest, convertUploadedFile, convertUploadRequest} from "../converter/converters";
 import {header, Headers, HttpStatus, ResponseWrapper} from "../model/common";
 import {
     DirectoryCreationRequestModel,
@@ -94,8 +89,7 @@ export default class FilesController implements Controller {
      */
     public async getDirectories(): Promise<ResponseWrapper<DirectoryListModel>> {
 
-        const directories: DirectoryModel[] = this.fileManagementFacade.getAcceptorInfo()
-            .map((acceptor) => convertAcceptor(acceptor));
+        const directories: DirectoryModel[] = this.fileManagementFacade.getAcceptorInfo();
 
         return new ResponseWrapper<DirectoryListModel>(HttpStatus.OK, {acceptors: directories});
     }
@@ -141,7 +135,7 @@ export default class FilesController implements Controller {
 
         await this.fileManagementFacade.updateMetadata(updateFileMetadataRequestModel.pathUUID, convertMetadataUpdateRequest(updateFileMetadataRequestModel));
 
-        return new ResponseWrapper<void>(HttpStatus.CREATED, null, [
+        return new ResponseWrapper<void>(HttpStatus.CREATED, undefined, [
             header(Headers.LOCATION, this.createLocation(updateFileMetadataRequestModel.pathUUID))
         ]);
     }

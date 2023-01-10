@@ -1,7 +1,6 @@
-import {AcceptorInfo} from "../../core/model/file-browser-api";
 import {FileInput, MIMEType} from "../../core/model/file-input";
 import {UploadedFileCreateAttributes, UploadedFileUpdateAttributes} from "../../core/model/uploaded-file";
-import {DirectoryModel, FileModel, FileUploadRequestModel, UpdateFileMetadataRequestModel} from "../model/files";
+import {FileModel, FileUploadRequestModel, UpdateFileMetadataRequestModel} from "../model/files";
 
 /**
  * Converts an UploadedFileCreateAttributes object to FileModel.
@@ -17,22 +16,6 @@ export function convertUploadedFile(uploadedFile: UploadedFileCreateAttributes):
         description: uploadedFile.description,
         path: uploadedFile.path,
         reference: `/${uploadedFile.pathUUID}/${uploadedFile.storedFilename}`
-    }
-}
-
-/**
- * Converts an AcceptorInfo object to DirectoryModel.
- *
- * @param acceptor source AcceptorInfo object
- * @returns converted object as DirectoryModel
- */
-export function convertAcceptor(acceptor: AcceptorInfo): DirectoryModel {
-
-    return {
-        id: acceptor.id,
-        root: acceptor.rootDirectoryName,
-        acceptableMimeTypes: acceptor.acceptableMimeTypes,
-        children: acceptor.childrenDirectories
     }
 }
 

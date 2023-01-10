@@ -26,14 +26,10 @@ abstract class MappingHelper {
 
         response.status(responseWrapper.status);
 
-        if (responseWrapper.content) {
-            if (responseWrapper.sendAsRaw) {
-                response.send(responseWrapper.content);
-            } else {
-                response.json(responseWrapper.content);
-            }
+        if (responseWrapper.sendAsRaw || !responseWrapper.content) {
+            response.send(responseWrapper.content);
         } else {
-            response.send();
+            response.json(responseWrapper.content);
         }
     }
 
@@ -67,7 +63,7 @@ export class ParameterlessMappingHelper extends MappingHelper {
      * @param endpointCall controller endpoint call to be registered
      * @returns Express request handler definition
      */
-    public register(endpointCall: () => Promise<ResponseWrapper<any>>): (request: Request, response: Response, next: NextFunction) => void {
+    public register(endpointCall: () => Promise<ResponseWrapper<any>> | ResponseWrapper<any>): (request: Request, response: Response, next: NextFunction) => void {
         return this.catchAsyncError(async (request: Request, response: Response) => this.mapResponse(await endpointCall(), response));
     }
 }
@@ -94,7 +90,7 @@ export class ParameterizedMappingHelper<Input> extends MappingHelper {
      * @param endpointCall controller endpoint call to be registered
      * @returns Express request handler definition
      */
-    public register(endpointCall: (input: Input) => Promise<ResponseWrapper<any>>): (request: Request, response: Response, next: NextFunction) => void {
+    public register(endpointCall: (input: Input) => Promise<ResponseWrapper<any>> | ResponseWrapper<any>): (request: Request, response: Response, next: NextFunction) => void {
         return this.catchAsyncError(async (request: Request, response: Response) => this.mapResponse(await endpointCall(new this.inputMapping(request)), response));
     }
 }

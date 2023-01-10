@@ -4,8 +4,8 @@
 export interface AcceptorInfo {
 
     id: string;
-    rootDirectoryName: string;
-    childrenDirectories: string[];
+    root: string;
+    children: string[];
     acceptableMimeTypes: string[];
 }
 

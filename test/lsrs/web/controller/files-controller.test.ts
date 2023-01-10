@@ -217,7 +217,7 @@ describe("Unit tests for FilesController", () => {
             expect(result).not.toBeNull();
             expect(result.status).toBe(HttpStatus.CREATED);
             expect(result.sendAsRaw).toBe(false);
-            expect(result.content).toBeNull();
+            expect(result.content).toBeUndefined();
 
             sinon.assert.calledWith(fileManagementFacadeMock.createDirectory, directoryCreationRequestModel.parent, directoryCreationRequestModel.name);
         });
@@ -244,7 +244,7 @@ describe("Unit tests for FilesController", () => {
             expect(result).not.toBeNull();
             expect(result.status).toBe(HttpStatus.CREATED);
             expect(result.sendAsRaw).toBe(false);
-            expect(result.content).toBeNull();
+            expect(result.content).toBeUndefined();
             expect(result.headers.size).toBe(1);
             expect(result.headers.get(Headers.LOCATION)).toBe(`/test/files/${uploadedFile1.pathUUID}`);
 
@@ -273,7 +273,7 @@ describe("Unit tests for FilesController", () => {
             expect(result).not.toBeNull();
             expect(result.status).toBe(HttpStatus.NO_CONTENT);
             expect(result.sendAsRaw).toBe(false);
-            expect(result.content).toBeNull();
+            expect(result.content).toBeUndefined();
 
             sinon.assert.calledWith(fileManagementFacadeMock.remove, fileIdentifier.pathUUID);
         });

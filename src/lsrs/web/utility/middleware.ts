@@ -1,4 +1,5 @@
 import {NextFunction, Request, Response} from "express";
+import {InsufficientScopeError, InvalidTokenError, UnauthorizedError} from "express-oauth2-jwt-bearer";
 import formidable, {File} from "formidable";
 import {Writable} from "stream";
 import {
@@ -16,6 +17,9 @@ import {ConstraintViolationErrorMessage, ErrorMessage, HttpStatus} from "../mode
 const errorStatusMap = new Map<string, HttpStatus>([
     [InvalidFileInputError.name, HttpStatus.BAD_REQUEST],
     [InvalidRequestError.name, HttpStatus.BAD_REQUEST],
+    [UnauthorizedError.name, HttpStatus.FORBIDDEN],
+    [InsufficientScopeError.name, HttpStatus.FORBIDDEN],
+    [InvalidTokenError.name, HttpStatus.FORBIDDEN],
     [ResourceNotFoundError.name, HttpStatus.NOT_FOUND],
     [InaccessibleFileError.name, HttpStatus.NOT_FOUND],
     [ConflictingResourceError.name, HttpStatus.CONFLICT]

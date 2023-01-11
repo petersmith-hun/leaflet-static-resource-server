@@ -1,5 +1,6 @@
 import express from "express";
 import sinon, {SinonStub, SinonStubbedInstance} from "sinon";
+import ConfigurationProvider from "../../../src/lsrs/core/config/configuration-provider";
 import {GenericError} from "../../../src/lsrs/core/error/error-types";
 import ControllerRegistration from "../../../src/lsrs/web/controller-registration";
 import ActuatorController from "../../../src/lsrs/web/controller/actuator-controller";
@@ -11,6 +12,7 @@ describe("Unit tests for ControllerRegistration", () => {
 
     let actuatorControllerMock: SinonStubbedInstance<ActuatorController>;
     let filesControllerMock: SinonStubbedInstance<FilesController>;
+    let configurationProviderMock: SinonStubbedInstance<ConfigurationProvider>;
     let controllerRegistration: ControllerRegistration;
 
     beforeEach(() => {
@@ -19,8 +21,11 @@ describe("Unit tests for ControllerRegistration", () => {
         actuatorControllerMock.controllerType.returns(ControllerType.ACTUATOR)
         filesControllerMock = sinon.createStubInstance(FilesControllerStub) as unknown as SinonStubbedInstance<FilesController>;
         filesControllerMock.controllerType.returns(ControllerType.FILES);
+        configurationProviderMock = sinon.createStubInstance(ConfigurationProvider);
 
-        controllerRegistration = new ControllerRegistration([actuatorControllerMock, filesControllerMock]);
+        configurationProviderMock.getAuthConfig.returns({oauthIssuer: "http://localhost:9999", oauthAudience: "test-lsrs-aud"});
+
+        controllerRegistration = new ControllerRegistration([actuatorControllerMock, filesControllerMock], configurationProviderMock);
     });
 
     describe("Test scenarios for #registerRoutes", () => {
@@ -37,16 +42,16 @@ describe("Unit tests for ControllerRegistration", () => {
             const result = controllerRegistration.registerRoutes() as unknown as RouterStub;
 
             // then
-            await _assertRegistration(result, "get", "/actuator", "/info", actuatorControllerMock.info);
-            await _assertRegistration(result, "get", "/actuator", "/health", actuatorControllerMock.health);
+            await _assertRegistration(result, "get", "/actuator", "/info", actuatorControllerMock.info, 1);
+            await _assertRegistration(result, "get", "/actuator", "/health", actuatorControllerMock.health, 1);
             await _assertRegistration(result, "get", "/files", "/", filesControllerMock.getUploadedFiles);
-            await _assertRegistration(result, "post", "/files", "/", filesControllerMock.uploadFile, 2);
+            await _assertRegistration(result, "post", "/files", "/", filesControllerMock.uploadFile, 3);
             await _assertRegistration(result, "get", "/files", "/directories", filesControllerMock.getDirectories);
             await _assertRegistration(result, "post", "/files", "/directories", filesControllerMock.createDirectory);
             await _assertRegistration(result, "get", "/files", "/:pathUUID", filesControllerMock.getFileDetails);
             await _assertRegistration(result, "put", "/files", "/:pathUUID", filesControllerMock.updateFileMetaInfo);
             await _assertRegistration(result, "delete", "/files", "/:pathUUID", filesControllerMock.deleteFile);
-            await _assertRegistration(result, "get", "/files", "/:pathUUID/:storedFilename", filesControllerMock.download);
+            await _assertRegistration(result, "get", "/files", "/:pathUUID/:storedFilename", filesControllerMock.download, 1);
 
             parameterlessHelperStub.restore();
             parameterizedHelperStub.restore();
@@ -55,7 +60,7 @@ describe("Unit tests for ControllerRegistration", () => {
         it("should registration fail due to unknown controller", () => {
 
             // given
-            controllerRegistration = new ControllerRegistration([]);
+            controllerRegistration = new ControllerRegistration([], configurationProviderMock);
 
             // when
             const failingCall = () => controllerRegistration.registerRoutes();
@@ -66,7 +71,7 @@ describe("Unit tests for ControllerRegistration", () => {
         });
     });
 
-    async function _assertRegistration(router: RouterStub, method: string, controller: string, path: string, controllerMock: SinonStub, numberOfHandlers: number = 1) {
+    async function _assertRegistration(router: RouterStub, method: string, controller: string, path: string, controllerMock: SinonStub, numberOfHandlers: number = 2) {
 
         const controllerGroup = router.root.get(controller);
         const endpoint = controllerGroup!.endpoints.find(endpoint => endpoint[0] == method && endpoint[1] == path);

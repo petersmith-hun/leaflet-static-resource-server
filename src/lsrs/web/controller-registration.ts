@@ -1,10 +1,13 @@
-import {Router} from "express";
+import {RequestHandler, Router} from "express";
+import {auth, requiredScopes} from "express-oauth2-jwt-bearer";
 import {InjectMany, Service} from "typedi";
+import ConfigurationProvider, {AuthConfig} from "../core/config/configuration-provider";
 import {GenericError} from "../core/error/error-types";
 import {ControllerToken} from "../helper/typedi-tokens";
 import ActuatorController from "./controller/actuator-controller";
 import {Controller, ControllerType} from "./controller/controller";
 import FilesController from "./controller/files-controller";
+import {Scope} from "./model/common";
 import {
     DirectoryCreationRequestModel,
     FileIdentifier,
@@ -21,9 +24,11 @@ import {formidableUploadMiddleware} from "./utility/middleware";
 export default class ControllerRegistration {
 
     private readonly controllerMap: Map<ControllerType, Controller>;
+    private readonly authConfig: AuthConfig;
 
-    constructor(@InjectMany(ControllerToken) controllers: Controller[]) {
+    constructor(@InjectMany(ControllerToken) controllers: Controller[], configurationProvider: ConfigurationProvider) {
         this.controllerMap = new Map(controllers.map(controller => [controller.controllerType(), controller]));
+        this.authConfig = configurationProvider.getAuthConfig();
     }
 
     /**
@@ -41,6 +46,7 @@ export default class ControllerRegistration {
         const upload = new ParameterizedMappingHelper(FileUploadRequestModel);
         const directory = new ParameterizedMappingHelper(DirectoryCreationRequestModel);
         const update = new ParameterizedMappingHelper(UpdateFileMetadataRequestModel);
+        const auth = this.prepareAuth();
 
         const actuatorRouter = Router();
         const filesRouter = Router();
@@ -50,17 +56,17 @@ export default class ControllerRegistration {
             .get("/health", simple.register(() => actuatorController.health()));
 
         filesRouter.route("/")
-            .get(simple.register(() => filesController.getUploadedFiles()))
-            .post(formidableUploadMiddleware, upload.register((uploadRequest) => filesController.uploadFile(uploadRequest)));
+            .get(auth(Scope.READ_FILES), simple.register(() => filesController.getUploadedFiles()))
+            .post(auth(Scope.WRITE_FILES), formidableUploadMiddleware, upload.register((uploadRequest) => filesController.uploadFile(uploadRequest)));
 
         filesRouter.route("/directories")
-            .get(simple.register(() => filesController.getDirectories()))
-            .post(directory.register((creationRequest) => filesController.createDirectory(creationRequest)));
+            .get(auth(Scope.READ_FILES), simple.register(() => filesController.getDirectories()))
+            .post(auth(Scope.WRITE_FILES), directory.register((creationRequest) => filesController.createDirectory(creationRequest)));
 
         filesRouter.route("/:pathUUID")
-            .get(fileID.register(fileIdentifier => filesController.getFileDetails(fileIdentifier)))
-            .put(update.register((updateRequest) => filesController.updateFileMetaInfo(updateRequest)))
-            .delete(fileID.register(fileIdentifier => filesController.deleteFile(fileIdentifier)));
+            .get(auth(Scope.READ_FILES), fileID.register(fileIdentifier => filesController.getFileDetails(fileIdentifier)))
+            .put(auth(Scope.WRITE_FILES), update.register((updateRequest) => filesController.updateFileMetaInfo(updateRequest)))
+            .delete(auth(Scope.WRITE_FILES), fileID.register(fileIdentifier => filesController.deleteFile(fileIdentifier)));
 
         filesRouter.route("/:pathUUID/:storedFilename")
             .get(fileID.register(fileIdentifier => filesController.download(fileIdentifier)));
@@ -78,5 +84,16 @@ export default class ControllerRegistration {
         }
 
         return controller;
+    }
+
+    private prepareAuth(): (scope: Scope) => RequestHandler[] {
+
+        return (scope) => [
+            auth({
+                issuerBaseURL: this.authConfig.oauthIssuer,
+                audience: this.authConfig.oauthAudience
+            }),
+            requiredScopes(scope)
+        ];
     }
 }

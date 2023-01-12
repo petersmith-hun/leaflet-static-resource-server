@@ -4,14 +4,15 @@ import {FileInput, MIMEType} from "../model/file-input";
 
 type MapValue = string | number | boolean | object | undefined;
 type MapNode = Map<string, MapValue> | undefined;
-type ConfigNode = "server" | "datasource" | "storage" | "info";
+type ConfigNode = "server" | "datasource" | "storage" | "auth" | "info";
 type ServerConfigKey = "context-path" | "host" | "port";
 type DatasourceConfigKey = "uri" | "username" | "password" | "logging";
-type StorageConfigKey = "upload-path" | "max-age-in-days" | "permission" | "acceptors"
-type AcceptorConfigKey = "accepted-as" | "group-root-directory" | "accepted-mime-types"
+type StorageConfigKey = "upload-path" | "max-age-in-days" | "permission" | "acceptors";
+type AuthConfigKey = "oauth-issuer" | "oauth-audience";
+type AcceptorConfigKey = "accepted-as" | "group-root-directory" | "accepted-mime-types";
 type AcceptorConfigNode = { [Key in AcceptorConfigKey]: string | string[] };
 type ActuatorConfigKey = "appName" | "abbreviation";
-type ConfigKey = ServerConfigKey | DatasourceConfigKey | StorageConfigKey | AcceptorConfigKey | ActuatorConfigKey;
+type ConfigKey = ServerConfigKey | DatasourceConfigKey | StorageConfigKey | AcceptorConfigKey | AuthConfigKey | ActuatorConfigKey;
 
 /**
  * Application configuration parameters root.
@@ -21,12 +22,14 @@ export class ApplicationConfig {
     readonly server: ServerConfig;
     readonly datasource: DatasourceConfig;
     readonly storage: StorageConfig;
+    readonly auth: AuthConfig;
     readonly appInfo: AppInfoConfig;
 
     constructor(parameters: MapNode) {
         this.server = new ServerConfig(getNode(parameters, "server"));
         this.datasource = new DatasourceConfig(getNode(parameters, "datasource"));
         this.storage = new StorageConfig(getNode(parameters, "storage"));
+        this.auth = new AuthConfig(getNode(parameters, "auth"));
         this.appInfo = new AppInfoConfig(getNode(parameters, "info"));
     }
 }
@@ -111,6 +114,20 @@ export class StorageConfig {
 }
 
 /**
+ * Authorization config parameters.
+ */
+export class AuthConfig {
+
+    readonly oauthIssuer: string;
+    readonly oauthAudience: string;
+
+    constructor(parameters: MapNode) {
+        this.oauthIssuer = getValue(parameters, "oauth-issuer");
+        this.oauthAudience = getValue(parameters, "oauth-audience");
+    }
+}
+
+/**
  * Application info config parameters;
  */
 export class AppInfoConfig {
@@ -170,6 +187,13 @@ export default class ConfigurationProvider {
      */
     public getStorageConfig(): StorageConfig {
         return this.applicationConfig.storage;
+    }
+
+    /**
+     * Returns the authorization configuration.
+     */
+    public getAuthConfig(): AuthConfig {
+        return this.applicationConfig.auth;
     }
 
     /**

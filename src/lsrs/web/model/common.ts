@@ -6,6 +6,7 @@ export enum HttpStatus {
     CREATED = 201,
     NO_CONTENT = 204,
     BAD_REQUEST = 400,
+    FORBIDDEN = 403,
     NOT_FOUND = 404,
     CONFLICT = 409,
     INTERNAL_SERVER_ERROR = 500
@@ -19,6 +20,14 @@ export enum Headers {
     CONTENT_LENGTH = "Content-Length",
     CONTENT_TYPE = "Content-Type",
     LOCATION = "Location"
+}
+
+/**
+ * Supported OAuth scopes.
+ */
+export enum Scope {
+    READ_FILES = "read:files",
+    WRITE_FILES = "write:files"
 }
 
 /**

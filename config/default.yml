@@ -53,6 +53,15 @@ lsrs:
         accepted-mime-types:
           - image/*
 
+  # Authorization settings (OAuth 2.0)
+  auth:
+
+    # OAuth token issuer name (authorization server address)
+    oauth-issuer: <provide>
+
+    # OAuth token audience
+    oauth-audience: <provide>
+
   # Actuator endpoint settings
   info:
 

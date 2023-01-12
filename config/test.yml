@@ -22,6 +22,9 @@ lsrs:
         accepted-mime-types:
           - application/octet-stream
           - application/pdf
+  auth:
+    oauth-issuer: http://localhost:9999
+    oauth-audience: test-lsrs-audience
   info:
     appName: "[TEST] Leaflet Static Resource Server"
     abbreviation: TEST-LSRS

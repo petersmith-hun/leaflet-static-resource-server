@@ -4,15 +4,17 @@ import {FileInput, MIMEType} from "../model/file-input";
 
 type MapValue = string | number | boolean | object | undefined;
 type MapNode = Map<string, MapValue> | undefined;
-type ConfigNode = "server" | "datasource" | "storage" | "auth" | "info";
+type ConfigNode = "server" | "datasource" | "storage" | "auth" | "logging" | "info";
 type ServerConfigKey = "context-path" | "host" | "port";
 type DatasourceConfigKey = "uri" | "username" | "password" | "logging";
 type StorageConfigKey = "upload-path" | "max-age-in-days" | "permission" | "acceptors";
 type AuthConfigKey = "oauth-issuer" | "oauth-audience";
 type AcceptorConfigKey = "accepted-as" | "group-root-directory" | "accepted-mime-types";
 type AcceptorConfigNode = { [Key in AcceptorConfigKey]: string | string[] };
+type LoggingConfigKey = "tlp-logging";
+type TLPLoggingConfigKey = "enabled" | "host";
 type ActuatorConfigKey = "appName" | "abbreviation";
-type ConfigKey = ServerConfigKey | DatasourceConfigKey | StorageConfigKey | AcceptorConfigKey | AuthConfigKey | ActuatorConfigKey;
+type ConfigKey = ServerConfigKey | DatasourceConfigKey | StorageConfigKey | AcceptorConfigKey | AuthConfigKey | LoggingConfigKey | TLPLoggingConfigKey | ActuatorConfigKey;
 
 /**
  * Application configuration parameters root.
@@ -23,6 +25,7 @@ export class ApplicationConfig {
     readonly datasource: DatasourceConfig;
     readonly storage: StorageConfig;
     readonly auth: AuthConfig;
+    readonly logging: LoggingConfig;
     readonly appInfo: AppInfoConfig;
 
     constructor(parameters: MapNode) {
@@ -30,6 +33,7 @@ export class ApplicationConfig {
         this.datasource = new DatasourceConfig(getNode(parameters, "datasource"));
         this.storage = new StorageConfig(getNode(parameters, "storage"));
         this.auth = new AuthConfig(getNode(parameters, "auth"));
+        this.logging = new LoggingConfig(getNode(parameters, "logging"));
         this.appInfo = new AppInfoConfig(getNode(parameters, "info"));
     }
 }
@@ -128,6 +132,21 @@ export class AuthConfig {
 }
 
 /**
+ * Logging configuration parameters.
+ */
+export class LoggingConfig {
+
+    readonly tlpLoggingEnabled: boolean;
+    readonly tlpHost: string;
+
+    constructor(parameters: MapNode) {
+        const tlpLogging: MapNode = getValue(parameters, "tlp-logging");
+        this.tlpLoggingEnabled = getValue(tlpLogging, "enabled", false);
+        this.tlpHost = getValue(tlpLogging, "host");
+    }
+}
+
+/**
  * Application info config parameters;
  */
 export class AppInfoConfig {
@@ -194,6 +213,13 @@ export default class ConfigurationProvider {
      */
     public getAuthConfig(): AuthConfig {
         return this.applicationConfig.auth;
+    }
+
+    /**
+     * Returns the logging configuration.
+     */
+    public getLoggingConfig(): LoggingConfig {
+        return this.applicationConfig.logging;
     }
 
     /**

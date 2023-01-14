@@ -1,20 +1,28 @@
+import {AsyncLocalStorage} from "async_hooks";
 import {ISettingsParam, Logger} from "tslog";
+import {Container} from "typedi";
+import ConfigurationProvider, {LoggingConfig} from "../core/config/configuration-provider";
+import TLPTransport from "./tlp-transport";
 
 /**
  * Factory component to configure logging and create loggers.
  */
 export default class LoggerFactory {
 
-    static initialized: boolean = false;
-    static readonly config: ISettingsParam = {
+    static readonly asyncLocalStorage: AsyncLocalStorage<{ requestId: string }> = new AsyncLocalStorage();
+
+    private static initialized: boolean = false;
+    private static tlpLogging: LoggingConfig;
+    private static readonly config: ISettingsParam = {
         displayFunctionName: false,
-        displayFilePath: "hidden"
+        displayFilePath: "hidden",
+        requestId: () => LoggerFactory.asyncLocalStorage.getStore()?.requestId
     };
 
     static init() {
         if (!this.initialized) {
             this.initialized = true;
-            // attach TLP transport here later
+            this.tlpLogging = Container.get(ConfigurationProvider).getLoggingConfig();
         }
     }
 
@@ -30,7 +38,12 @@ export default class LoggerFactory {
             ? name
             : (<Function>name).name;
 
-        return new Logger({name: loggerName, ...this.config});
+        const logger = new Logger({name: loggerName, ...this.config});
+        if (this.tlpLogging.tlpLoggingEnabled) {
+            logger.attachTransport(new TLPTransport(this.tlpLogging.tlpHost));
+        }
+
+        return logger;
     }
 }
 

@@ -1,3 +1,4 @@
+import {isUUID} from "class-validator";
 import {Request, Response} from "express";
 import {IncomingForm} from "formidable";
 import sinon, {SinonStub, SinonStubbedInstance} from "sinon";
@@ -9,9 +10,14 @@ import {
     ResourceNotFoundError
 } from "../../../../src/lsrs/core/error/error-types";
 import {UploadedFile} from "../../../../src/lsrs/core/model/uploaded-file";
+import LoggerFactory from "../../../../src/lsrs/helper/logger-factory";
 import {InvalidRequestError} from "../../../../src/lsrs/web/error/api-error-types";
 import {ConstraintViolation, HttpStatus} from "../../../../src/lsrs/web/model/common";
-import {errorHandlerMiddleware, formidableUploadMiddleware} from "../../../../src/lsrs/web/utility/middleware";
+import {
+    errorHandlerMiddleware,
+    formidableUploadMiddleware,
+    requestTrackingMiddleware
+} from "../../../../src/lsrs/web/utility/middleware";
 
 describe("Unit tests for Express middleware functions", () => {
 
@@ -110,6 +116,22 @@ describe("Unit tests for Express middleware functions", () => {
             // then
             // exception expected
             await expect(failingCall).rejects.toThrow(GenericError);
+        });
+    });
+
+    describe("Test scenarios for #requestTrackingMiddleware", () => {
+
+        it("should store requestId in async local storage", async () => {
+
+            // given
+            let result = null;
+            const next = () => result = LoggerFactory.asyncLocalStorage.getStore()?.requestId;
+
+            // when
+            await requestTrackingMiddleware(requestStub, responseStub, next);
+
+            // then
+            expect(isUUID(result)).toBe(true);
         });
     });
 });

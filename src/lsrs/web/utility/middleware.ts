@@ -2,12 +2,14 @@ import {NextFunction, Request, Response} from "express";
 import {InsufficientScopeError, InvalidTokenError, UnauthorizedError} from "express-oauth2-jwt-bearer";
 import formidable, {File} from "formidable";
 import {Writable} from "stream";
+import {v4 as UUID} from "uuid";
 import {
     ConflictingResourceError,
     InaccessibleFileError,
     InvalidFileInputError,
     ResourceNotFoundError
 } from "../../core/error/error-types";
+import LoggerFactory from "../../helper/logger-factory";
 import {InvalidRequestError} from "../error/api-error-types";
 import {ConstraintViolationErrorMessage, ErrorMessage, HttpStatus} from "../model/common";
 
@@ -111,4 +113,20 @@ export const formidableUploadMiddleware = async (request: Request, response: Res
     });
 
     next();
+}
+
+/**
+ * Creates a request tracking middleware for Express. Allows TSLog logging library to include a shared request ID
+ * across the log messages created within a single web request.
+ *
+ * @param request Express Request object
+ * @param response Express Response object
+ * @param next Express next function
+ */
+export const requestTrackingMiddleware = async (request: Request, response: Response, next: NextFunction) => {
+
+    const requestId = UUID();
+    await LoggerFactory.asyncLocalStorage.run({ requestId }, async () => {
+        return next();
+    });
 }

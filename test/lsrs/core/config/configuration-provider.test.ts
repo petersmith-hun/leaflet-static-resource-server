@@ -65,6 +65,34 @@ describe("Unit tests for ConfigurationProvider", () => {
         });
     });
 
+    describe("Test scenarios for #getAuthConfig", () => {
+
+        it("should return the auth config defined in test.yml", () => {
+
+            // when
+            const result = configurationProvider.getAuthConfig();
+
+            // then
+            expect(result).not.toBeNull();
+            expect(result.oauthAudience).toBe("test-lsrs-audience");
+            expect(result.oauthIssuer).toBe("http://localhost:9999");
+        });
+    });
+
+    describe("Test scenarios for #getLoggingConfig", () => {
+
+        it("should return the logging config defined in test.yml", () => {
+
+            // when
+            const result = configurationProvider.getLoggingConfig();
+
+            // then
+            expect(result).not.toBeNull();
+            expect(result.tlpLoggingEnabled).toBe(false);
+            expect(result.tlpHost).toBe("http://localhost:9999/tlp");
+        });
+    });
+
     describe("Test scenarios for #getAppInfoConfig", () => {
 
         it("should return the app info config defined in test.yml", () => {

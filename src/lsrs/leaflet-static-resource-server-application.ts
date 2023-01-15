@@ -5,7 +5,7 @@ import ConfigurationProvider from "./core/config/configuration-provider";
 import LoggerFactory from "./helper/logger-factory";
 import {ExpressToken} from "./helper/typedi-tokens";
 import ControllerRegistration from "./web/controller-registration";
-import {errorHandlerMiddleware} from "./web/utility/middleware";
+import {errorHandlerMiddleware, requestTrackingMiddleware} from "./web/utility/middleware";
 
 /**
  * Service start-up entry point for Leaflet Static Resource Server application.
@@ -35,6 +35,7 @@ export default class LeafletStaticResourceServerApplication {
 
         this.express
             .use(json())
+            .use(requestTrackingMiddleware)
             .use(serverConfig.contextPath, this.controllerRegistration.registerRoutes())
             .use(errorHandlerMiddleware)
             .listen(serverConfig.port, serverConfig.host, () => {

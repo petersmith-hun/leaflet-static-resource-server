@@ -62,6 +62,18 @@ lsrs:
     # OAuth token audience
     oauth-audience: <provide>
 
+  # Logging settings
+  logging:
+
+    #  Log exposure to TinyLogProcessor (TLP) service
+    tlp-logging:
+
+      # Enable/disable TLP log exposure
+      enabled: false
+
+      # TLP host address
+      host: http://localhost:9999/tlp
+
   # Actuator endpoint settings
   info:
 

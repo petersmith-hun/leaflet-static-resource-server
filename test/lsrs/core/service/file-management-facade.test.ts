@@ -2,6 +2,7 @@ import sinon, {SinonStubbedInstance} from "sinon";
 import FileManagementFacade from "../../../../src/lsrs/core/service/file-management-facade";
 import FileManagementService from "../../../../src/lsrs/core/service/file-management-service";
 import FileMetadataService from "../../../../src/lsrs/core/service/file-metadata-service";
+import {InMemoryCache} from "../../../../src/lsrs/helper/cache";
 import {uploadedFile1, uploadedFile2} from "../dao/uploaded-file-dao.testdata";
 import {
     acceptorInfo1,
@@ -15,13 +16,15 @@ describe("Unit tests for FileManagementFacade", () => {
 
     let fileMetadataService: SinonStubbedInstance<FileMetadataService>;
     let fileManagementService: SinonStubbedInstance<FileManagementService>;
+    let cacheMock: SinonStubbedInstance<InMemoryCache>;
     let fileManagementFacade: FileManagementFacade;
 
     beforeEach(() => {
         fileMetadataService = sinon.createStubInstance(FileMetadataService);
         fileManagementService = sinon.createStubInstance(FileManagementService);
+        cacheMock = sinon.createStubInstance(InMemoryCache);
 
-        fileManagementFacade = new FileManagementFacade(fileMetadataService, fileManagementService);
+        fileManagementFacade = new FileManagementFacade(fileMetadataService, fileManagementService, cacheMock);
     });
 
     describe("Test scenarios for #upload", () => {
@@ -44,10 +47,35 @@ describe("Unit tests for FileManagementFacade", () => {
 
     describe("Test scenarios for #download", () => {
 
-        it("should retrieve file metadata then download and wrap the file", async () => {
+        it("should retrieve file metadata from database then download and wrap the file", async () => {
 
             // given
+            cacheMock.get.returns(uploadedFile1);
             await fileMetadataService.retrieveMetadata.resolves(uploadedFile1);
+            fileManagementService.download.returns(fileBuffer);
+
+            // when
+            const result = await fileManagementFacade.download(uploadedFile1.pathUUID);
+
+            // then
+            cacheMock.get.callArgWith(2, uploadedFile1.pathUUID);
+            expect(result).not.toBeNull();
+            expect(result).toStrictEqual({
+                originalFilename: uploadedFile1.originalFilename,
+                mimeType: uploadedFile1.acceptedAs,
+                length: fileBuffer.length,
+                fileContent: fileBuffer
+            });
+
+            sinon.assert.calledWith(cacheMock.get);
+            sinon.assert.calledWith(fileMetadataService.retrieveMetadata, uploadedFile1.pathUUID);
+            sinon.assert.calledWith(fileManagementService.download, uploadedFile1.path);
+        });
+
+        it("should retrieve file metadata from cache then download and wrap the file", async () => {
+
+            // given
+            cacheMock.get.returns(uploadedFile1);
             fileManagementService.download.returns(fileBuffer);
 
             // when
@@ -62,7 +90,7 @@ describe("Unit tests for FileManagementFacade", () => {
                 fileContent: fileBuffer
             });
 
-            sinon.assert.calledWith(fileMetadataService.retrieveMetadata, uploadedFile1.pathUUID);
+            sinon.assert.notCalled(fileMetadataService.retrieveMetadata);
             sinon.assert.calledWith(fileManagementService.download, uploadedFile1.path);
         });
     });
@@ -81,6 +109,7 @@ describe("Unit tests for FileManagementFacade", () => {
             sinon.assert.calledWith(fileMetadataService.retrieveMetadata, uploadedFile1.pathUUID);
             sinon.assert.calledWith(fileManagementService.remove, uploadedFile1.path);
             sinon.assert.calledWith(fileMetadataService.removeMetadata, uploadedFile1.pathUUID);
+            sinon.assert.calledWith(cacheMock.remove, "metadata", uploadedFile1.pathUUID);
         });
     });
 
@@ -127,6 +156,7 @@ describe("Unit tests for FileManagementFacade", () => {
 
             // then
             sinon.assert.calledWith(fileMetadataService.updateMetadata, uploadedFile1.pathUUID, uploadedFileUpdateAttributes);
+            sinon.assert.calledWith(cacheMock.remove, "metadata", uploadedFile1.pathUUID);
         });
     });
 

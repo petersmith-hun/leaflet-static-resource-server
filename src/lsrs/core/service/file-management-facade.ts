@@ -1,5 +1,6 @@
 import {Logger} from "tslog";
 import {Service} from "typedi";
+import {InMemoryCache} from "../../helper/cache";
 import {Optional} from "../../helper/common-utilities";
 import LoggerFactory from "../../helper/logger-factory";
 import {AcceptorInfo, DownloadableFileWrapper} from "../model/file-browser-api";
@@ -18,14 +19,18 @@ import FileMetadataService from "./file-metadata-service";
 @Service()
 export default class FileManagementFacade {
 
+    private static readonly metadataCache = "metadata";
+
     private readonly logger: Logger = LoggerFactory.getLogger(FileManagementFacade);
 
     private readonly fileMetadataService: FileMetadataService;
     private readonly fileManagementService: FileManagementService;
+    private readonly cache: InMemoryCache;
 
-    constructor(fileMetadataService: FileMetadataService, fileManagementService: FileManagementService) {
+    constructor(fileMetadataService: FileMetadataService, fileManagementService: FileManagementService, cache: InMemoryCache) {
         this.fileMetadataService = fileMetadataService;
         this.fileManagementService = fileManagementService;
+        this.cache = cache;
     }
 
 
@@ -51,7 +56,8 @@ export default class FileManagementFacade {
      */
     async download(pathUUID: string): Promise<DownloadableFileWrapper> {
 
-        const uploadedFile = await this.fileMetadataService.retrieveMetadata(pathUUID);
+        const uploadedFile = await this.cache.get(FileManagementFacade.metadataCache, pathUUID,
+            async (key) => await this.fileMetadataService.retrieveMetadata(key))!;
         const fileContent = this.fileManagementService.download(uploadedFile.path);
 
         return {
@@ -70,6 +76,7 @@ export default class FileManagementFacade {
     async remove(pathUUID: string): Promise<void> {
 
         const uploadedFile = await this.fileMetadataService.retrieveMetadata(pathUUID);
+        this.cache.remove(FileManagementFacade.metadataCache, pathUUID);
         this.fileManagementService.remove(uploadedFile.path);
         await this.fileMetadataService.removeMetadata(pathUUID);
     }
@@ -101,6 +108,7 @@ export default class FileManagementFacade {
      */
     async updateMetadata(pathUUID: string, updatedMetadata: UploadedFileUpdateAttributes): Promise<void> {
         await this.fileMetadataService.updateMetadata(pathUUID, updatedMetadata);
+        this.cache.remove(FileManagementFacade.metadataCache, pathUUID);
     }
 
     /**

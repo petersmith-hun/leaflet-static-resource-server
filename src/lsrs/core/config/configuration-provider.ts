@@ -1,4 +1,5 @@
 import config from "config";
+import {TLogLevelName} from "tslog";
 import {Service} from "typedi";
 import {FileInput, MIMEType} from "../model/file-input";
 
@@ -11,7 +12,7 @@ type StorageConfigKey = "upload-path" | "max-age-in-days" | "permission" | "acce
 type AuthConfigKey = "oauth-issuer" | "oauth-audience";
 type AcceptorConfigKey = "accepted-as" | "group-root-directory" | "accepted-mime-types";
 type AcceptorConfigNode = { [Key in AcceptorConfigKey]: string | string[] };
-type LoggingConfigKey = "tlp-logging";
+type LoggingConfigKey = "tlp-logging" | "min-level";
 type TLPLoggingConfigKey = "enabled" | "host";
 type ActuatorConfigKey = "appName" | "abbreviation";
 type ConfigKey = ServerConfigKey | DatasourceConfigKey | StorageConfigKey | AcceptorConfigKey | AuthConfigKey | LoggingConfigKey | TLPLoggingConfigKey | ActuatorConfigKey;
@@ -136,11 +137,13 @@ export class AuthConfig {
  */
 export class LoggingConfig {
 
+    readonly minLevel: TLogLevelName;
     readonly tlpLoggingEnabled: boolean;
     readonly tlpHost: string;
 
     constructor(parameters: MapNode) {
         const tlpLogging: MapNode = getValue(parameters, "tlp-logging");
+        this.minLevel = getValue(parameters, "min-level", "info");
         this.tlpLoggingEnabled = getValue(tlpLogging, "enabled", false);
         this.tlpHost = getValue(tlpLogging, "host");
     }

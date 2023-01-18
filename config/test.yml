@@ -26,6 +26,7 @@ lsrs:
     oauth-issuer: http://localhost:9999
     oauth-audience: test-lsrs-audience
   logging:
+    min-level: debug
     tlp-logging:
       enabled: false
       host: http://localhost:9999/tlp

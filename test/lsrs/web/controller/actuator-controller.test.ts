@@ -1,13 +1,14 @@
 import sinon, {SinonStubbedInstance} from "sinon";
 import {Container} from "typedi";
 import ConfigurationProvider, {AppInfoConfig} from "../../../../src/lsrs/core/config/configuration-provider";
-import {VersionToken} from "../../../../src/lsrs/helper/typedi-tokens";
+import {BuildTimeToken, VersionToken} from "../../../../src/lsrs/helper/typedi-tokens";
 import ActuatorController from "../../../../src/lsrs/web/controller/actuator-controller";
 import {ControllerType} from "../../../../src/lsrs/web/controller/controller";
 import {InfoResponse} from "../../../../src/lsrs/web/model/actuator";
 import {HttpStatus} from "../../../../src/lsrs/web/model/common";
 
 const version = "1.0.0-test";
+const buildTime = "2023-01-20";
 const appName = "test-app-1";
 const abbreviation = "TA1";
 const appInfoConfig = createAppInfoConfig();
@@ -31,7 +32,8 @@ describe("Unit tests for ActuatorController", () => {
 
             // given
             Container.set(VersionToken, version);
-            const expectedResponse = new InfoResponse(appName, abbreviation, version);
+            Container.set(BuildTimeToken, buildTime)
+            const expectedResponse = new InfoResponse(appName, abbreviation, version, buildTime);
 
             // when
             const result = actuatorController.info();

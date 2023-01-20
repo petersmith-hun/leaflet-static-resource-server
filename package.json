@@ -1,13 +1,13 @@
 {
   "name": "leaflet-static-resource-server",
-  "version": "0.8.0-dev",
+  "version": "0.8.1-dev",
   "bin": "./dist/lsrs-main.js",
   "scripts": {
     "start": "ts-node ./src/lsrs-main.ts",
     "diststart": "node ./dist/src/lsrs-main.js",
     "livereload": "ts-node-dev --respawn --pretty --transpile-only ./src/lsrs-main.ts",
     "test": "jest",
-    "build": "tsc -p .",
+    "build": "tsc -p . && ts-node .circleci/generate-build-time.ts",
     "package": "npx pkg --targets=linux --output=./build/lsrs ."
   },
   "pkg": {

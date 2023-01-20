@@ -1,6 +1,6 @@
 import {Container, Inject, Service} from "typedi";
 import ConfigurationProvider from "../../core/config/configuration-provider";
-import {ControllerToken, VersionToken} from "../../helper/typedi-tokens";
+import {BuildTimeToken, ControllerToken, VersionToken} from "../../helper/typedi-tokens";
 import {HealthResponse, InfoResponse} from "../model/actuator";
 import {HttpStatus, ResponseWrapper} from "../model/common";
 import {Controller, ControllerType} from "./controller";
@@ -53,7 +53,8 @@ export default class ActuatorController implements Controller {
 
         const appInfo = this.configurationProvider.getAppInfoConfig();
         const version = Container.get<string>(VersionToken);
+        const buildTime = Container.get<string>(BuildTimeToken);
 
-        return new InfoResponse(appInfo.appName, appInfo.abbreviation, version);
+        return new InfoResponse(appInfo.appName, appInfo.abbreviation, version, buildTime);
     }
 }

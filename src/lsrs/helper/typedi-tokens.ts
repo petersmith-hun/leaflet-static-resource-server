@@ -7,3 +7,4 @@ export const ExpressToken = new Token<Express>("express");
 export const ControllerToken = new Token<Controller>("controllers");
 export const ConfigurationToken = new Token<Configuration>("configurations");
 export const VersionToken = new Token<string>("version");
+export const BuildTimeToken = new Token<string>("buildTime");

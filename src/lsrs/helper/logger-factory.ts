@@ -23,6 +23,7 @@ export default class LoggerFactory {
         if (!this.initialized) {
             this.initialized = true;
             this.tlpLogging = Container.get(ConfigurationProvider).getLoggingConfig();
+            this.config.minLevel = this.tlpLogging.minLevel;
         }
     }
 

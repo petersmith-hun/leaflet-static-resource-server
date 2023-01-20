@@ -65,6 +65,9 @@ lsrs:
   # Logging settings
   logging:
 
+    # Minimum logging level (defaults to 'info' if not specified)
+    min-level: info
+
     #  Log exposure to TinyLogProcessor (TLP) service
     tlp-logging:
 

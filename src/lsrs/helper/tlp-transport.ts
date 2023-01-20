@@ -35,7 +35,7 @@ class TLPLogMessage {
     private readonly exception?: ErrorLog;
     
     /**
-     * This constructor extract and converts log entry data from a TSLog log entry object.
+     * This constructor extracts and converts log entry data from a TSLog log entry object.
      *
      * @param entry TSLog log entry object of type ILogObject
      */

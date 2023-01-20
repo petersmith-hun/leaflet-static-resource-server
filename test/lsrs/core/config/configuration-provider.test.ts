@@ -88,6 +88,7 @@ describe("Unit tests for ConfigurationProvider", () => {
 
             // then
             expect(result).not.toBeNull();
+            expect(result.minLevel).toBe("debug");
             expect(result.tlpLoggingEnabled).toBe(false);
             expect(result.tlpHost).toBe("http://localhost:9999/tlp");
         });

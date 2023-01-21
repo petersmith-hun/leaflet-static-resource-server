@@ -14,8 +14,8 @@ import {
     FileUploadRequestModel,
     UpdateFileMetadataRequestModel
 } from "./model/files";
+import {formidableUploadMiddleware} from "./utility/formidable-support";
 import {ParameterizedMappingHelper, ParameterlessMappingHelper} from "./utility/mapping-helper";
-import {formidableUploadMiddleware} from "./utility/middleware";
 
 /**
  * Component to handle controller registrations.

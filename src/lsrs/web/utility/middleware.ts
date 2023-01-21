@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {InsufficientScopeError, InvalidTokenError, UnauthorizedError} from "express-oauth2-jwt-bearer";
-import formidable, {File} from "formidable";
+import formidable, {File, Part} from "formidable";
 import {Writable} from "stream";
 import {v4 as UUID} from "uuid";
 import {
@@ -83,17 +83,31 @@ class FileUploadWritable extends Writable {
  */
 export const formidableUploadMiddleware = async (request: Request, response: Response, next: NextFunction) => {
 
-    await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve, _) => {
 
         const fileUploadWritable = new FileUploadWritable();
         const form = formidable({
-            fileWriteStreamHandler: () => fileUploadWritable
+            fileWriteStreamHandler: () => fileUploadWritable,
         });
+
+        // The code below aims to mitigate a known issue with how Formidable is handling text/plain form-data fields
+        // https://github.com/node-formidable/formidable/issues/875
+        form.onPart = (part: Part) => {
+            // @ts-ignore
+            if (part.mimetype && !part.headers["content-disposition"]?.match(/filename="/)) {
+                // @ts-ignore
+                delete part.mimetype;
+            }
+
+            form._handlePart(part);
+        };
 
         form.parse(request, (error, fields, files) => {
 
             if (error) {
-                reject(error);
+                response
+                    .status(HttpStatus.BAD_REQUEST)
+                    .json({message: error.message ?? "Invalid input file"});
             } else {
 
                 const inputFile: File = files.inputFile as File;
@@ -106,9 +120,9 @@ export const formidableUploadMiddleware = async (request: Request, response: Res
                 };
                 request.body.subFolder = fields.subFolder as string;
                 request.body.description = fields.description as string;
-
-                resolve();
             }
+
+            resolve();
         });
     });
 

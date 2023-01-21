@@ -111,11 +111,24 @@ describe("Unit tests for Express middleware functions", () => {
             parseStub = sinon.stub(IncomingForm.prototype, "parse").callsArgWith(1, new GenericError("something went wrong"), null, null);
 
             // when
-            const failingCall = async () => await formidableUploadMiddleware(requestStub, responseStub, () => {});
+            await formidableUploadMiddleware(requestStub, responseStub, () => {});
 
             // then
-            // exception expected
-            await expect(failingCall).rejects.toThrow(GenericError);
+            sinon.assert.calledWith(responseStub.json, {message: "something went wrong"});
+            sinon.assert.calledWith(responseStub.status, HttpStatus.BAD_REQUEST);
+        });
+
+        it("should reject parsing on error (string passed as error)", async () => {
+
+            // given
+            parseStub = sinon.stub(IncomingForm.prototype, "parse").callsArgWith(1, "something went wrong", null, null);
+
+            // when
+            await formidableUploadMiddleware(requestStub, responseStub, () => {});
+
+            // then
+            sinon.assert.calledWith(responseStub.json, {message: "Invalid input file"});
+            sinon.assert.calledWith(responseStub.status, HttpStatus.BAD_REQUEST);
         });
     });
 

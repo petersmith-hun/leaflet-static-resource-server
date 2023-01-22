@@ -1,6 +1,6 @@
 {
   "name": "leaflet-static-resource-server",
-  "version": "0.8.2-dev",
+  "version": "0.8.3-dev",
   "bin": "./dist/lsrs-main.js",
   "scripts": {
     "start": "ts-node ./src/lsrs-main.ts",

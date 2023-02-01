@@ -98,12 +98,14 @@ function populateRequestBody(fields: formidable.Fields, files: formidable.Files,
 
     const inputFile: File = files.inputFile as File;
 
-    request.body.inputFile = {
-        size: inputFile.size,
-        originalFilename: inputFile.originalFilename,
-        mimetype: inputFile.mimetype,
-        content: fileUploadWritable.getBuffer()
-    };
+    if (inputFile) {
+        request.body.inputFile = {
+            size: inputFile.size,
+            originalFilename: inputFile.originalFilename,
+            mimetype: inputFile.mimetype,
+            content: fileUploadWritable.getBuffer()
+        };
+    }
     request.body.subFolder = fields.subFolder as string;
     request.body.description = fields.description as string;
 }

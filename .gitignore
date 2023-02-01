@@ -6,3 +6,5 @@ node_modules/
 *.iml
 config/development.yml
 package-lock.json
+cucumber-report.html
+lsrs-sqlite.db

@@ -79,6 +79,8 @@ export default class FileManagementFacade {
         this.cache.remove(FileManagementFacade.metadataCache, pathUUID);
         this.fileManagementService.remove(uploadedFile.path);
         await this.fileMetadataService.removeMetadata(pathUUID);
+
+        this.logger.info(`Removed file identified by pathUUID=${pathUUID}`);
     }
 
     /**
@@ -88,7 +90,10 @@ export default class FileManagementFacade {
      * @param directoryName name of the directory to create
      */
     createDirectory(parent: string, directoryName: string): void {
+
         this.fileManagementService.createDirectory(parent, directoryName);
+
+        this.logger.info(`Created folder '${directoryName}' under parent '${parent}'`);
     }
 
     /**
@@ -107,8 +112,11 @@ export default class FileManagementFacade {
      * @param updatedMetadata updated meta information
      */
     async updateMetadata(pathUUID: string, updatedMetadata: UploadedFileUpdateAttributes): Promise<void> {
+
         await this.fileMetadataService.updateMetadata(pathUUID, updatedMetadata);
         this.cache.remove(FileManagementFacade.metadataCache, pathUUID);
+
+        this.logger.info(`Metadata has been updated for file identified by pathUUID=${pathUUID}`);
     }
 
     /**

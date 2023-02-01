@@ -1,5 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {InsufficientScopeError, InvalidTokenError, UnauthorizedError} from "express-oauth2-jwt-bearer";
+import {Logger} from "tslog";
 import {v4 as UUID} from "uuid";
 import {
     ConflictingResourceError,
@@ -10,6 +11,8 @@ import {
 import LoggerFactory from "../../helper/logger-factory";
 import {InvalidRequestError} from "../error/api-error-types";
 import {ConstraintViolationErrorMessage, ErrorMessage, HttpStatus} from "../model/common";
+
+const logger: Logger = LoggerFactory.getLogger("ErrorHandlerMiddleware");
 
 /**
  * Error type to HTTP status mapping.
@@ -40,6 +43,12 @@ export const errorHandlerMiddleware = (error: Error, request: Request, response:
     const errorMessage: ErrorMessage | ConstraintViolationErrorMessage = errorType == InvalidRequestError.name
         ? {message: error.message, violations: (error as InvalidRequestError).constraintViolations}
         : {message: error.message};
+
+    if ("violations" in errorMessage) {
+        logger.error(`A constraint violation occurred while processing the request: ${JSON.stringify(errorMessage.violations)}`);
+    } else {
+        logger.error(`An error occurred while processing the request: ${error.stack}`);
+    }
 
     response
         .status(errorStatusMap.get(errorType) ?? HttpStatus.INTERNAL_SERVER_ERROR)

@@ -1,0 +1,12 @@
+default:
+  requireModule:
+    - ts-node/register
+  paths:
+    - acceptance/features/**/*.feature
+  require:
+    - acceptance/support/init.ts
+    - acceptance/step-definitions/**/*.ts
+  tags: not @Disabled
+  format:
+    - html:acceptance/out/cucumber-report.html
+  forceExit: true

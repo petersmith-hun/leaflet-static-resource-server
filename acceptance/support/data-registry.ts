@@ -1,9 +1,9 @@
-/**
- * Component to store intermediate data during Cucumber test execution.
- */
 import {AxiosResponse} from "axios";
 import {Attribute} from "./test-constants";
 
+/**
+ * Component to store intermediate data during Cucumber test execution.
+ */
 export default class DataRegistry {
 
     private static readonly registry = new Map<string, any>();

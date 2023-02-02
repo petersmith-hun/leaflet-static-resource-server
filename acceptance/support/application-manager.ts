@@ -61,6 +61,7 @@ export default class ApplicationManager {
      * Removes the temporary storage folder.
      */
     public static cleanUp(basePath = uploadPath): void {
+
         fs.rmSync(basePath, {recursive: true, force: true});
         this.logger.info(`Removed temporary storage folder (${basePath})`);
     }

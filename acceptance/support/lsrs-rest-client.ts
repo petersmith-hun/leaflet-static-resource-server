@@ -52,8 +52,10 @@ export default class LSRSRestClient {
      * Calls the GET /files/:pathUUID endpoint and returns its response.
      */
     public async callGetFileDetailsEndpoint(): Promise<AxiosResponse<FileModel>> {
+
         const pathUUID: string = DataRegistry.get(Attribute.PATH_UUID);
         expect(pathUUID.includes("/")).toBe(false);
+
         return this.axiosGet(`files/${pathUUID}`);
     }
 
@@ -61,8 +63,10 @@ export default class LSRSRestClient {
      * Calls the GET /files/:pathUUID/:storedFilename endpoint and returns its response.
      */
     public async callDownloadFileEndpoint(): Promise<AxiosResponse<FileModel>> {
+
         const pathUUID: string = DataRegistry.get(Attribute.PATH_UUID);
         expect(pathUUID.includes("/")).toBe(true);
+
         return this.axiosGet(`files/${pathUUID}`);
     }
 
@@ -116,7 +120,9 @@ export default class LSRSRestClient {
      * Calls the DELETE /files/:pathUUID endpoint and returns its response.
      */
     public async callDeleteFileEndpoint(): Promise<AxiosResponse<FileModel>> {
+
         const pathUUID = DataRegistry.get(Attribute.PATH_UUID);
+
         return await axios.delete(`${this.baseURL}/files/${pathUUID}`, this.getAxiosRequestConfig());
     }
 

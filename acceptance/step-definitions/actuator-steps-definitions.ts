@@ -7,8 +7,8 @@ import LSRSRestClient from "../support/lsrs-rest-client";
 let restClient: LSRSRestClient;
 
 // -- set up --
-BeforeAll(async () => {
-    restClient = await LSRSRestClient.getInstance();
+BeforeAll(() => {
+    restClient = LSRSRestClient.getInstance();
 });
 
 // -- actions --

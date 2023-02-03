@@ -129,7 +129,7 @@ export default class LSRSRestClient {
     /**
      * Returns the initialized LSRSRestClient instance (initializes first if needed).
      */
-    public static async getInstance(): Promise<LSRSRestClient> {
+    public static getInstance(): LSRSRestClient {
 
         if (!LSRSRestClient.instance) {
             const serverConfig = (new ConfigurationProvider).getServerConfig();

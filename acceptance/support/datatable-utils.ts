@@ -3,20 +3,17 @@ import {DirectoryModel, FileModel} from "../../src/lsrs/web/model/files";
 import DataRegistry from "./data-registry";
 import {Attribute} from "./test-constants";
 
+type ConversionTuple<Type> = [keyof Type, (value: string) => any | any[]];
+const splitFunction = (item: string) => item.split(", ");
+const pathUUIDReplaceFunction = (item: string) => item.replace("$pathUUID", DataRegistry.get(Attribute.PATH_UUID));
+
 /**
  * Converts a row of file model data table to FileModel object.
  *
  * @param fileModel file model data table row
  */
 export const convertFileModel = (fileModel: string[]) => {
-
-    return {
-        reference: fileModel[0].replace("$pathUUID", DataRegistry.get(Attribute.PATH_UUID)),
-        path: fileModel[1],
-        acceptedAs: fileModel[2],
-        description: fileModel[3],
-        originalFilename: fileModel[4]
-    } as FileModel
+    return convert<FileModel>(fileModel, [["reference", pathUUIDReplaceFunction], "path", "acceptedAs", "description", "originalFilename"]);
 };
 
 /**
@@ -25,13 +22,7 @@ export const convertFileModel = (fileModel: string[]) => {
  * @param directoryModel directory model data table row
  */
 export const convertDirectoryModel = (directoryModel: string[]) => {
-
-    return {
-        id: directoryModel[0],
-        root: directoryModel[1],
-        children: directoryModel[2].split(", "),
-        acceptableMimeTypes: directoryModel[3].split(", ")
-    } as DirectoryModel
+    return convert<DirectoryModel>(directoryModel, ["id", "root", ["children", splitFunction], ["acceptableMimeTypes", splitFunction]]);
 };
 
 /**
@@ -40,10 +31,17 @@ export const convertDirectoryModel = (directoryModel: string[]) => {
  * @param violation constraint violation data table row
  */
 export const convertConstraintViolation = (violation: string[]) => {
+    return convert<ConstraintViolation>(violation, ["field", "constraint", "message"]);
+};
 
-    return {
-        field: violation[0],
-        constraint: violation[1],
-        message: violation[2]
-    } as ConstraintViolation;
+const convert = <Type>(source: string[], properties: (keyof Type | ConversionTuple<Type>)[]): Type => {
+
+    const entries = properties
+        .map((item) => typeof item == "string"
+            ? [item, (item: string) => item]
+            : item)
+        .map((item) => item as ConversionTuple<Type>)
+        .map((item, index) => [item[0], item[1](source[index])]);
+
+    return Object.fromEntries(entries);
 };

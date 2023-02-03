@@ -49,14 +49,9 @@ export default class ApplicationManager {
 
         this.clearAcceptorRoot("images");
         this.clearAcceptorRoot("files");
-
-        this.createTestFiles(TestData.subFolders, fs.mkdirSync);
-        this.logger.info("Created mock storage folders");
-
-        this.createTestFiles(TestData.files, (filename) => fs.writeFileSync(filename, Buffer.from(filename)));
-        this.logger.info("Created mock files");
+        this.prepareMockFolders();
+        this.prepareMockFiles();
     }
-
     /**
      * Removes the temporary storage folder.
      */
@@ -74,8 +69,21 @@ export default class ApplicationManager {
     }
 
     private static notifyStarted(resolve: () => void, message: string) {
+
         this.logger.info(message);
         resolve();
+    }
+
+    private static prepareMockFiles() {
+
+        this.createTestFiles(TestData.files, (filename) => fs.writeFileSync(filename, Buffer.from(filename)));
+        this.logger.info("Created mock files");
+    }
+
+    private static prepareMockFolders() {
+
+        this.createTestFiles(TestData.subFolders, fs.mkdirSync);
+        this.logger.info("Created mock storage folders");
     }
 
     private static createTestFiles(items: string[], factoryFunction: (path: string) => void) {

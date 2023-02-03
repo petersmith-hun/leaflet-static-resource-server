@@ -19,8 +19,8 @@ const scopeMap = new Map<string, Scope>([
 ]);
 
 // -- set up --
-BeforeAll(async () => {
-    restClient = await LSRSRestClient.getInstance();
+BeforeAll(() => {
+    restClient = LSRSRestClient.getInstance();
 });
 
 // -- conditions --

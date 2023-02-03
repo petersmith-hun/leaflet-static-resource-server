@@ -89,10 +89,13 @@ jobs:
           override-ci-command: npm install
           with-cache: false
       - run:
-          name: Execute LSRS tests
+          name: Execute LSRS unit tests
           command: |
             mkdir logs
             npm run test
+      - run:
+          name: Execute LSRS acceptance tests
+          command: npm run acceptance
       - run:
           name: Transpile code
           command: npm run build

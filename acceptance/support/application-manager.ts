@@ -76,13 +76,16 @@ export default class ApplicationManager {
 
     private static prepareMockFiles() {
 
-        this.createTestFiles(TestData.files, (filename) => fs.writeFileSync(filename, Buffer.from(filename)));
+        this.createTestFiles(TestData.files, (filename) => {
+            const content = filename.replace(uploadPath, "");
+            fs.writeFileSync(filename, Buffer.from(content));
+        });
         this.logger.info("Created mock files");
     }
 
     private static prepareMockFolders() {
 
-        this.createTestFiles(TestData.subFolders, fs.mkdirSync);
+        this.createTestFiles(TestData.subFolders, (filename) => fs.mkdirSync(filename, {mode: "0777"}));
         this.logger.info("Created mock storage folders");
     }
 

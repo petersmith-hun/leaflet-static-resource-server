@@ -101,7 +101,7 @@ Feature: Test scenarios for file handling endpoints
      Then the application responds with HTTP status OK
       And the contents of the file images/stored_filename_1.jpg are returned as byte stream
       And the Content-Type header contains "image/jpeg"
-      And the Content-Length header contains "78"
+      And the Content-Length header contains "29"
       And the Cache-Control header contains "max-age=31536000"
 
   @PositiveScenario
@@ -114,7 +114,7 @@ Feature: Test scenarios for file handling endpoints
      Then the application responds with HTTP status OK
       And the contents of the file images/stored_filename_2_as_png_image.png are returned as byte stream
       And the Content-Type header contains "image/png"
-      And the Content-Length header contains "91"
+      And the Content-Length header contains "42"
       And the Cache-Control header contains "max-age=31536000"
 
   @NegativeScenario

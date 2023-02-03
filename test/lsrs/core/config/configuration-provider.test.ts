@@ -49,7 +49,7 @@ describe("Unit tests for ConfigurationProvider", () => {
             // then
             expect(result).not.toBeNull();
             expect(result.uploadPath).toBe("/tmp/storage");
-            expect(result.permission).toBe("0744");
+            expect(result.permission).toBe("0777");
             expect(result.maxAgeInDays).toBe(365);
 
             expect(result.acceptors.length).toBe(2);

@@ -12,7 +12,7 @@ parameters:
     default: lsrs
   release_tag_pattern:
     type: string
-    default: 's/v[0-9]+\.[0-9]+\.[0-9]+\.([0-9]+)\.release/\1/'
+    default: 's/v[0-9]+\.[0-9]+\.[0-9]+\-([0-9]+)\.release/\1/'
   distribution_archive:
     type: string
     default: leaflet-static-resource-server-release.tar.gz

@@ -10,5 +10,6 @@ module.exports = {
     "src/lsrs/web/**/*.ts"
   ],
   coverageReporters: ["text", "html"],
-  coverageThreshold: {global: {lines: 90, branches: 80}}
+  coverageThreshold: {global: {lines: 90, branches: 80}},
+  maxWorkers: 2
 };

@@ -10,7 +10,8 @@
     "strict": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "removeComments": true
   },
   "exclude": [
     "./test",

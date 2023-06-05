@@ -24,7 +24,7 @@ export default class DatasourceConfiguration implements Configuration {
         this.datasourceConfig = configurationProvider.getDatasourceConfig();
     }
 
-    init(): void {
+    async init(): Promise<void> {
 
         this.sequelize = new Sequelize(this.datasourceConfig.uri, {
             username: this.datasourceConfig.username,
@@ -32,13 +32,15 @@ export default class DatasourceConfiguration implements Configuration {
             logging: this.datasourceConfig.logging
         });
 
-        this.checkConnection();
+        await this.checkConnection();
         this.initUploadedFileModel();
+
+        return Promise.resolve();
     }
 
-    private checkConnection(): void {
+    private checkConnection(): Promise<unknown> {
 
-        this.sequelize.authenticate()
+        return this.sequelize.authenticate()
             .then(() => this.logger.info(`Connected to datasource ${this.sequelize.getDialect()}/${this.sequelize.getDatabaseName()}`))
             .catch(reason => {
                 throw new GenericError(`Failed to connect to the database: ${reason}`);

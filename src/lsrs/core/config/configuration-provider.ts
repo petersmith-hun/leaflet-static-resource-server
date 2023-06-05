@@ -12,10 +12,9 @@ type StorageConfigKey = "upload-path" | "max-age-in-days" | "permission" | "acce
 type AuthConfigKey = "oauth-issuer" | "oauth-audience";
 type AcceptorConfigKey = "accepted-as" | "group-root-directory" | "accepted-mime-types";
 type AcceptorConfigNode = { [Key in AcceptorConfigKey]: string | string[] };
-type LoggingConfigKey = "tlp-logging" | "min-level";
-type TLPLoggingConfigKey = "enabled" | "host";
+type LoggingConfigKey = "enable-json-logging" | "min-level";
 type ActuatorConfigKey = "appName" | "abbreviation";
-type ConfigKey = ServerConfigKey | DatasourceConfigKey | StorageConfigKey | AcceptorConfigKey | AuthConfigKey | LoggingConfigKey | TLPLoggingConfigKey | ActuatorConfigKey;
+type ConfigKey = ServerConfigKey | DatasourceConfigKey | StorageConfigKey | AcceptorConfigKey | AuthConfigKey | LoggingConfigKey | ActuatorConfigKey;
 
 /**
  * Application configuration parameters root.
@@ -138,14 +137,11 @@ export class AuthConfig {
 export class LoggingConfig {
 
     readonly minLevel: TLogLevelName;
-    readonly tlpLoggingEnabled: boolean;
-    readonly tlpHost: string;
+    readonly enableJsonLogging: boolean;
 
     constructor(parameters: MapNode) {
-        const tlpLogging: MapNode = getValue(parameters, "tlp-logging");
         this.minLevel = getValue(parameters, "min-level", "info");
-        this.tlpLoggingEnabled = getValue(tlpLogging, "enabled", false);
-        this.tlpHost = getValue(tlpLogging, "host");
+        this.enableJsonLogging = getValue(parameters, "enable-json-logging", false);
     }
 }
 

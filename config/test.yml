@@ -27,9 +27,7 @@ lsrs:
     oauth-audience: test-lsrs-audience
   logging:
     min-level: debug
-    tlp-logging:
-      enabled: false
-      host: http://localhost:9999/tlp
+    enable-json-logging: false
   info:
     appName: "[TEST] Leaflet Static Resource Server"
     abbreviation: TEST-LSRS

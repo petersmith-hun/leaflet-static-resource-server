@@ -11,6 +11,6 @@ export interface Configuration {
     /**
      * Executes initialization steps of the marked configuration class.
      */
-    init(): void;
+    init(): Promise<void>;
 }
 

@@ -68,14 +68,8 @@ lsrs:
     # Minimum logging level (defaults to 'info' if not specified)
     min-level: info
 
-    #  Log exposure to TinyLogProcessor (TLP) service
-    tlp-logging:
-
-      # Enable/disable TLP log exposure
-      enabled: false
-
-      # TLP host address
-      host: http://localhost:9999/tlp
+    # Enables formatting the log messages as JSON
+    enable-json-logging: false
 
   # Actuator endpoint settings
   info:

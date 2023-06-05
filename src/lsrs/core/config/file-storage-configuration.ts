@@ -22,12 +22,14 @@ export default class FileStorageConfiguration implements Configuration {
         this.storageConfig = configurationProvider.getStorageConfig();
     }
 
-    init(): void {
+    init(): Promise<void> {
         const storageRootPath = this.storageConfig.uploadPath;
         const permission = this.storageConfig.permission;
 
         this.attachStorageRoot(storageRootPath, permission);
         this.attachAcceptorRoots(storageRootPath, permission, this.storageConfig.acceptors);
+
+        return Promise.resolve();
     }
 
     private attachStorageRoot(uploadPath: string, permission: string, description: string = 'storage root') {

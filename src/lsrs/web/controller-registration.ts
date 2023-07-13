@@ -1,21 +1,22 @@
-import {RequestHandler, Router} from "express";
-import {auth, requiredScopes} from "express-oauth2-jwt-bearer";
-import {InjectMany, Service} from "typedi";
-import ConfigurationProvider, {AuthConfig} from "../core/config/configuration-provider";
-import {GenericError} from "../core/error/error-types";
-import {ControllerToken} from "../helper/typedi-tokens";
+import { RequestHandler, Router } from "express";
+import { auth, requiredScopes } from "express-oauth2-jwt-bearer";
+import { InjectMany, Service } from "typedi";
+import ConfigurationProvider, { AuthConfig } from "../core/config/configuration-provider";
+import { GenericError } from "../core/error/error-types";
+import { ControllerToken } from "../helper/typedi-tokens";
 import ActuatorController from "./controller/actuator-controller";
-import {Controller, ControllerType} from "./controller/controller";
+import { Controller, ControllerType } from "./controller/controller";
 import FilesController from "./controller/files-controller";
-import {Scope} from "./model/common";
+import { Scope } from "./model/common";
 import {
+    BrowseRequest,
     DirectoryCreationRequestModel,
     FileIdentifier,
     FileUploadRequestModel,
     UpdateFileMetadataRequestModel
 } from "./model/files";
-import {formidableUploadMiddleware} from "./utility/formidable-support";
-import {ParameterizedMappingHelper, ParameterlessMappingHelper} from "./utility/mapping-helper";
+import { formidableUploadMiddleware } from "./utility/formidable-support";
+import { ParameterizedMappingHelper, ParameterlessMappingHelper } from "./utility/mapping-helper";
 
 /**
  * Component to handle controller registrations.
@@ -46,6 +47,7 @@ export default class ControllerRegistration {
         const upload = new ParameterizedMappingHelper(FileUploadRequestModel);
         const directory = new ParameterizedMappingHelper(DirectoryCreationRequestModel);
         const update = new ParameterizedMappingHelper(UpdateFileMetadataRequestModel);
+        const browser = new ParameterizedMappingHelper(BrowseRequest);
         const auth = this.prepareAuth();
 
         const actuatorRouter = Router();
@@ -58,6 +60,9 @@ export default class ControllerRegistration {
         filesRouter.route("/")
             .get(auth(Scope.READ_FILES), simple.register(() => filesController.getUploadedFiles()))
             .post(auth(Scope.WRITE_FILES), formidableUploadMiddleware, upload.register((uploadRequest) => filesController.uploadFile(uploadRequest)));
+
+        filesRouter.route(["/browse", "/browse/:path([A-Za-z0-9_-]*)"])
+            .get(auth(Scope.READ_FILES), browser.register(browse => filesController.browse(browse)))
 
         filesRouter.route("/directories")
             .get(auth(Scope.READ_FILES), simple.register(() => filesController.getDirectories()))

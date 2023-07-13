@@ -12,6 +12,7 @@ export interface FileModel {
     acceptedAs: string;
     description: Optional<string>;
     path: string;
+    pathUUID: string;
 }
 
 /**
@@ -42,6 +43,26 @@ export interface DirectoryListModel {
 }
 
 /**
+ * API response model for a single folder in the VFS.
+ */
+export interface FolderModel {
+
+    folderName: string;
+    absolutePath: string;
+}
+
+/**
+ * API response model for the VFS browser.
+ */
+export interface VFSBrowserModel {
+
+    parent: string;
+    currentPath: string;
+    directories: FolderModel[];
+    files: FileModel[];
+}
+
+/**
  * API request model for operations requiring explicit file identification.
  */
 export class FileIdentifier {
@@ -51,6 +72,18 @@ export class FileIdentifier {
 
     constructor(request: Request) {
         this.pathUUID = request.params.pathUUID;
+    }
+}
+
+/**
+ * API request model for VFS browser.
+ */
+export class BrowseRequest {
+
+    readonly path: string[];
+
+    constructor(request: Request) {
+        this.path = request.params?.path?.split("/") ?? [];
     }
 }
 

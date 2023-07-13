@@ -1,21 +1,25 @@
-import {Request} from "express";
-import {UploadedFileUpdateAttributes} from "../../../src/lsrs/core/model/uploaded-file";
+import { Request } from "express";
+import { UploadedFileUpdateAttributes } from "../../../src/lsrs/core/model/uploaded-file";
 import {
+    BrowseRequest,
     DirectoryCreationRequestModel,
     DirectoryModel,
     FileIdentifier,
     FileModel,
     FileUploadRequestModel,
-    InputFile, UpdateFileMetadataRequestModel
+    InputFile,
+    UpdateFileMetadataRequestModel,
+    VFSBrowserModel
 } from "../../../src/lsrs/web/model/files";
-import {fileBuffer, fileInput} from "../core/service/service.testdata";
+import { fileBuffer, fileInput } from "../core/service/service.testdata";
 
 export const fileModel1: FileModel = {
     acceptedAs: "image/jpeg",
     description: "Uploaded file #1",
     originalFilename: "original_filename_1.jpg",
     path: "images/stored_filename_1.jpg",
-    reference: "/d4b1830d-f368-37a0-88f9-2faf7fa8ded6/stored_filename_1.jpg"
+    reference: "/d4b1830d-f368-37a0-88f9-2faf7fa8ded6/stored_filename_1.jpg",
+    pathUUID: "d4b1830d-f368-37a0-88f9-2faf7fa8ded6"
 };
 
 export const fileModel2: FileModel = {
@@ -23,7 +27,8 @@ export const fileModel2: FileModel = {
     description: "Uploaded file #2",
     originalFilename: "original_filename_2.png",
     path: "images/stored_filename_2.png",
-    reference: "/a167450b-e162-309d-bac4-fb5149d10512/stored_filename_2.png"
+    reference: "/a167450b-e162-309d-bac4-fb5149d10512/stored_filename_2.png",
+    pathUUID: "a167450b-e162-309d-bac4-fb5149d10512"
 };
 
 export const fileIdentifier: FileIdentifier = new FileIdentifier({
@@ -108,3 +113,39 @@ export const uploadedFileUpdateAttributes: UploadedFileUpdateAttributes = {
     originalFilename: "new_original_filename.jpg",
     description: "updated description"
 };
+
+export const browseRequestRoot: BrowseRequest = new BrowseRequest({
+    params: {}
+} as unknown as Request);
+
+export const browseRequestImages: BrowseRequest = new BrowseRequest({
+    params: {
+        path: "images"
+    }
+} as unknown as Request);
+
+export const browseRequestImagesSub1: BrowseRequest = new BrowseRequest({
+    params: {
+        path: "images/sub1"
+    }
+} as unknown as Request);
+
+export const browseRequestImagesDeepSub: BrowseRequest = new BrowseRequest({
+    params: {
+        path: "images/sub1/deep1"
+    }
+} as unknown as Request);
+
+export const vfsBrowserModel: VFSBrowserModel = {
+
+    parent: "/",
+    currentPath: "/images",
+    directories: [
+        { folderName: "sub1", absolutePath: "/images/sub1" },
+        { folderName: "sub2", absolutePath: "/images/sub2" }
+    ],
+    files: [
+        fileModel1,
+        fileModel2
+    ]
+}

@@ -1,15 +1,17 @@
-import sinon, {SinonStubbedInstance} from "sinon";
+import sinon, { SinonStubbedInstance } from "sinon";
+import VFSBrowser from "../../../../src/lsrs/core/service/browser/vfs-browser";
 import FileManagementFacade from "../../../../src/lsrs/core/service/file-management-facade";
 import FileManagementService from "../../../../src/lsrs/core/service/file-management-service";
 import FileMetadataService from "../../../../src/lsrs/core/service/file-metadata-service";
-import {InMemoryCache} from "../../../../src/lsrs/helper/cache";
-import {uploadedFile1, uploadedFile2} from "../dao/uploaded-file-dao.testdata";
+import { InMemoryCache } from "../../../../src/lsrs/helper/cache";
+import { uploadedFile1, uploadedFile2 } from "../dao/uploaded-file-dao.testdata";
 import {
     acceptorInfo1,
     fileBuffer,
     fileInput,
     uploadedFileCreateAttributes,
-    uploadedFileUpdateAttributes
+    uploadedFileUpdateAttributes,
+    vfsPathRoot
 } from "./service.testdata";
 
 describe("Unit tests for FileManagementFacade", () => {
@@ -17,14 +19,16 @@ describe("Unit tests for FileManagementFacade", () => {
     let fileMetadataService: SinonStubbedInstance<FileMetadataService>;
     let fileManagementService: SinonStubbedInstance<FileManagementService>;
     let cacheMock: SinonStubbedInstance<InMemoryCache>;
+    let vfsBrowserMock: SinonStubbedInstance<VFSBrowser>;
     let fileManagementFacade: FileManagementFacade;
 
     beforeEach(() => {
         fileMetadataService = sinon.createStubInstance(FileMetadataService);
         fileManagementService = sinon.createStubInstance(FileManagementService);
         cacheMock = sinon.createStubInstance(InMemoryCache);
+        vfsBrowserMock = sinon.createStubInstance(VFSBrowser);
 
-        fileManagementFacade = new FileManagementFacade(fileMetadataService, fileManagementService, cacheMock);
+        fileManagementFacade = new FileManagementFacade(fileMetadataService, fileManagementService, cacheMock, vfsBrowserMock);
     });
 
     describe("Test scenarios for #upload", () => {
@@ -216,6 +220,18 @@ describe("Unit tests for FileManagementFacade", () => {
             // then
             expect(result).not.toBeNull();
             expect(result).toStrictEqual([acceptorInfo1]);
+        });
+    });
+
+    describe("Test scenarios for #browseVFS", () => {
+
+        it("should pass processing of request to VFSBrowser component", async () => {
+
+            // when
+            await fileManagementFacade.browseVFS(vfsPathRoot);
+
+            // then
+            sinon.assert.calledWith(vfsBrowserMock.browseVFS, vfsPathRoot);
         });
     });
 });

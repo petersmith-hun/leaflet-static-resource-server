@@ -1,12 +1,19 @@
-import {Service} from "typedi";
-import ConfigurationProvider, {ServerConfig, StorageConfig} from "../../core/config/configuration-provider";
-import {ResourceNotFoundError} from "../../core/error/error-types";
-import {UploadedFile} from "../../core/model/uploaded-file";
+import { Service } from "typedi";
+import ConfigurationProvider, { ServerConfig, StorageConfig } from "../../core/config/configuration-provider";
+import { ResourceNotFoundError } from "../../core/error/error-types";
+import { VFSPath } from "../../core/model/file-browser-api";
+import { UploadedFile } from "../../core/model/uploaded-file";
 import FileManagementFacade from "../../core/service/file-management-facade";
-import {ControllerToken} from "../../helper/typedi-tokens";
-import {convertMetadataUpdateRequest, convertUploadedFile, convertUploadRequest} from "../converter/converters";
-import {header, Headers, HttpStatus, ResponseWrapper} from "../model/common";
+import { ControllerToken } from "../../helper/typedi-tokens";
 import {
+    convertBrowserResponse,
+    convertMetadataUpdateRequest,
+    convertUploadedFile,
+    convertUploadRequest
+} from "../converter/converters";
+import { header, Headers, HttpStatus, ResponseWrapper } from "../model/common";
+import {
+    BrowseRequest,
     DirectoryCreationRequestModel,
     DirectoryListModel,
     DirectoryModel,
@@ -14,10 +21,11 @@ import {
     FileListModel,
     FileModel,
     FileUploadRequestModel,
-    UpdateFileMetadataRequestModel
+    UpdateFileMetadataRequestModel,
+    VFSBrowserModel
 } from "../model/files";
-import {Validated} from "../utility/validator";
-import {Controller, ControllerType} from "./controller";
+import { Validated } from "../utility/validator";
+import { Controller, ControllerType } from "./controller";
 
 /**
  * Controller for file related endpoints.
@@ -92,6 +100,20 @@ export default class FilesController implements Controller {
         const directories: DirectoryModel[] = this.fileManagementFacade.getAcceptorInfo();
 
         return new ResponseWrapper<DirectoryListModel>(HttpStatus.OK, {acceptors: directories});
+    }
+
+    /**
+     * GET /files/browse[/{path1}[/{path2}[/...]]]
+     * Retrieves the VFS contents at the given path.
+     *
+     * @param browseRequest VFS path to browse (optional, undefined path lists the VFS storage root, i.e. the acceptor root folders)
+     */
+    public async browse(browseRequest: BrowseRequest): Promise<ResponseWrapper<VFSBrowserModel>> {
+
+        const vfsPath = new VFSPath(browseRequest.path);
+        const vfsContent = await this.fileManagementFacade.browseVFS(vfsPath);
+
+        return new ResponseWrapper<VFSBrowserModel>(HttpStatus.OK, convertBrowserResponse(vfsContent));
     }
 
     /**

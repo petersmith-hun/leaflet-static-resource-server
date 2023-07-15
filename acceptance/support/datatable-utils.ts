@@ -13,7 +13,7 @@ const pathUUIDReplaceFunction = (item: string) => item.replace("$pathUUID", Data
  * @param fileModel file model data table row
  */
 export const convertFileModel = (fileModel: string[]) => {
-    return convert<FileModel>(fileModel, [["reference", pathUUIDReplaceFunction], "path", "acceptedAs", "description", "originalFilename"]);
+    return convert<FileModel>(fileModel, [["reference", pathUUIDReplaceFunction], ["pathUUID", pathUUIDReplaceFunction], "path", "acceptedAs", "description", "originalFilename"]);
 };
 
 /**

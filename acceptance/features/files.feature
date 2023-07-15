@@ -9,10 +9,10 @@ Feature: Test scenarios for file handling endpoints
 
      Then the application responds with HTTP status OK
       And the following files are returned
-        | Reference                                                                | Path                                               | Accepted as | Description      | Original filename       |
-        | /d4b1830d-f368-37a0-88f9-2faf7fa8ded6/stored_filename_1.jpg              | images/stored_filename_1.jpg                       | image/jpeg  | Uploaded file #1 | original_filename_1.jpg |
-        | /a167450b-e162-309d-bac4-fb5149d10512/stored_filename_2_as_png_image.png | images/stored_filename_2_as_png_image.png          | image/png   | Uploaded file #2 | original_filename_2.png |
-        | /058c9d47-6ce4-3e48-9c44-35bb9c74b378/stored_filename_3.jpg              | images/test_sub/stored_filename_3.jpg              | image/jpeg  | Uploaded file #3 | original_filename_3.jpg |
+        | Reference                                                                | Path UUID                            | Path                                               | Accepted as | Description      | Original filename       |
+        | /d4b1830d-f368-37a0-88f9-2faf7fa8ded6/stored_filename_1.jpg              | d4b1830d-f368-37a0-88f9-2faf7fa8ded6 | images/stored_filename_1.jpg                       | image/jpeg  | Uploaded file #1 | original_filename_1.jpg |
+        | /a167450b-e162-309d-bac4-fb5149d10512/stored_filename_2_as_png_image.png | a167450b-e162-309d-bac4-fb5149d10512 | images/stored_filename_2_as_png_image.png          | image/png   | Uploaded file #2 | original_filename_2.png |
+        | /058c9d47-6ce4-3e48-9c44-35bb9c74b378/stored_filename_3.jpg              | 058c9d47-6ce4-3e48-9c44-35bb9c74b378 | images/test_sub/stored_filename_3.jpg              | image/jpeg  | Uploaded file #3 | original_filename_3.jpg |
 
   @NegativeScenario
   Scenario: Retrieving metadata is rejected due to insufficient scope
@@ -55,8 +55,8 @@ Feature: Test scenarios for file handling endpoints
 
      Then the application responds with HTTP status OK
       And the following file metadata is returned
-        | Reference                                                   | Path                                  | Accepted as | Description      | Original filename       |
-        | /d4b1830d-f368-37a0-88f9-2faf7fa8ded6/stored_filename_1.jpg | images/stored_filename_1.jpg          | image/jpeg  | Uploaded file #1 | original_filename_1.jpg |
+        | Reference                                                   | Path UUID                            | Path                                  | Accepted as | Description      | Original filename       |
+        | /d4b1830d-f368-37a0-88f9-2faf7fa8ded6/stored_filename_1.jpg | d4b1830d-f368-37a0-88f9-2faf7fa8ded6 | images/stored_filename_1.jpg          | image/jpeg  | Uploaded file #1 | original_filename_1.jpg |
 
   @NegativeScenario
   Scenario: Retrieving the details of a non-existing file
@@ -155,8 +155,8 @@ Feature: Test scenarios for file handling endpoints
 
      Then the application responds with HTTP status OK
       And the following file metadata is returned
-        | Reference                                                   | Path                                  | Accepted as | Description      | Original filename         |
-        | /d4b1830d-f368-37a0-88f9-2faf7fa8ded6/stored_filename_1.jpg | images/stored_filename_1.jpg          | image/jpeg  | New Description  | new_original_filename.jpg |
+        | Reference                                                   | Path UUID                            | Path                                  | Accepted as | Description      | Original filename         |
+        | /d4b1830d-f368-37a0-88f9-2faf7fa8ded6/stored_filename_1.jpg | d4b1830d-f368-37a0-88f9-2faf7fa8ded6 | images/stored_filename_1.jpg          | image/jpeg  | New Description  | new_original_filename.jpg |
 
   @NegativeScenario
   Scenario: Requesting metadata update for a non-existing file
@@ -213,8 +213,8 @@ Feature: Test scenarios for file handling endpoints
      When calling the retrieve file details endpoint
 
      Then the following file metadata is returned
-        | Reference                                   | Path                                    | Accepted as | Description                  | Original filename                |
-        | /$pathUUID/new_uploaded_file_1_-_test_1.jpg | images/new_uploaded_file_1_-_test_1.jpg | image/jpeg  | Description for the new file | New Uploaded File 1 - Test 1.jpg |
+        | Reference                                   | Path UUID | Path                                    | Accepted as | Description                  | Original filename                |
+        | /$pathUUID/new_uploaded_file_1_-_test_1.jpg | $pathUUID | images/new_uploaded_file_1_-_test_1.jpg | image/jpeg  | Description for the new file | New Uploaded File 1 - Test 1.jpg |
 
   @PositiveScenario
   @DirtiesDatabase
@@ -233,8 +233,8 @@ Feature: Test scenarios for file handling endpoints
      When calling the retrieve file details endpoint
 
      Then the following file metadata is returned
-        | Reference                                 | Path                                           | Accepted as | Description                           | Original filename              |
-        | /$pathUUID/arvizturo_tukorfurogep_123.png | images/test_sub/arvizturo_tukorfurogep_123.png | image/png   | Description for file in the subfolder | Árvíztűrő tükörfúrógép 123.png |
+        | Reference                                 | Path UUID | Path                                           | Accepted as | Description                           | Original filename              |
+        | /$pathUUID/arvizturo_tukorfurogep_123.png | $pathUUID | images/test_sub/arvizturo_tukorfurogep_123.png | image/png   | Description for file in the subfolder | Árvíztűrő tükörfúrógép 123.png |
 
   @PositiveScenario
   @DirtiesDatabase
@@ -252,8 +252,8 @@ Feature: Test scenarios for file handling endpoints
      When calling the retrieve file details endpoint
 
      Then the following file metadata is returned
-        | Reference                    | Path                               | Accepted as     | Description | Original filename |
-        | /$pathUUID/funny___memes.pdf | files/sub2/deep1/funny___memes.pdf | application/pdf |             | Funny   Memes.pdf |
+        | Reference                    | Path UUID | Path                               | Accepted as     | Description | Original filename |
+        | /$pathUUID/funny___memes.pdf | $pathUUID | files/sub2/deep1/funny___memes.pdf | application/pdf |             | Funny   Memes.pdf |
 
   @NegativeScenario
   Scenario: Uploading a file of a non-registered type is rejected

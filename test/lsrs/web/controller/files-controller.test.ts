@@ -1,23 +1,29 @@
-import sinon, {SinonStubbedInstance} from "sinon";
+import sinon, { SinonStub, SinonStubbedInstance } from "sinon";
 import ConfigurationProvider, {
     ServerConfig,
     StorageConfig
 } from "../../../../src/lsrs/core/config/configuration-provider";
-import {ResourceNotFoundError} from "../../../../src/lsrs/core/error/error-types";
+import { ResourceNotFoundError } from "../../../../src/lsrs/core/error/error-types";
+import { VFSPath } from "../../../../src/lsrs/core/model/file-browser-api";
 import FileManagementFacade from "../../../../src/lsrs/core/service/file-management-facade";
-import {ControllerType} from "../../../../src/lsrs/web/controller/controller";
+import { ControllerType } from "../../../../src/lsrs/web/controller/controller";
 import FilesController from "../../../../src/lsrs/web/controller/files-controller";
-import {InvalidRequestError} from "../../../../src/lsrs/web/error/api-error-types";
-import {Headers, HttpStatus} from "../../../../src/lsrs/web/model/common";
-import {uploadedFile1, uploadedFile2} from "../../core/dao/uploaded-file-dao.testdata";
+import { InvalidRequestError } from "../../../../src/lsrs/web/error/api-error-types";
+import { Headers, HttpStatus } from "../../../../src/lsrs/web/model/common";
+import { uploadedFile1, uploadedFile2 } from "../../core/dao/uploaded-file-dao.testdata";
 import {
     acceptorInfo1,
     acceptorInfo2,
     downloadableFileWrapper,
     fileBuffer,
-    fileInput
+    fileInput,
+    vfsContent
 } from "../../core/service/service.testdata";
 import {
+    browseRequestImages,
+    browseRequestImagesDeepSub,
+    browseRequestImagesSub1,
+    browseRequestRoot,
     directoryCreationRequestModel,
     directoryCreationRequestModelInvalid,
     directoryModel1,
@@ -30,7 +36,8 @@ import {
     fileUploadRequestModelInvalid,
     updateFileMetadataRequestModel,
     updateFileMetadataRequestModelInvalid,
-    uploadedFileUpdateAttributes
+    uploadedFileUpdateAttributes,
+    vfsBrowserModel
 } from "../web.testdata";
 
 describe("Unit tests for FilesController", () => {
@@ -174,6 +181,112 @@ describe("Unit tests for FilesController", () => {
             expect(result.content!.acceptors).toContainEqual(directoryModel1);
             expect(result.content!.acceptors).toContainEqual(directoryModel2);
         });
+    });
+
+    describe("Test scenarios for #browse", () => {
+
+        it("should return VFS contents for root", async () => {
+
+            // given
+            fileManagementFacadeMock.browseVFS.resolves(vfsContent);
+
+            // when
+            const result = await filesController.browse(browseRequestRoot);
+
+            // then
+            expect(result).not.toBeNull();
+            expect(result.status).toBe(HttpStatus.OK);
+            expect(result.sendAsRaw).toBe(false);
+            expect(result.content).toStrictEqual(vfsBrowserModel);
+
+            verifyVFSPath(fileManagementFacadeMock.browseVFS, {
+                currentDepth: 0,
+                parent: "/",
+                currentPath: undefined,
+                rootRelativePath: undefined,
+                acceptorRootPath: undefined
+            });
+        });
+
+        it("should return VFS contents for images acceptor root", async () => {
+
+            // given
+            fileManagementFacadeMock.browseVFS.resolves(vfsContent);
+
+            // when
+            const result = await filesController.browse(browseRequestImages);
+
+            // then
+            expect(result).not.toBeNull();
+            expect(result.status).toBe(HttpStatus.OK);
+            expect(result.sendAsRaw).toBe(false);
+            expect(result.content).toStrictEqual(vfsBrowserModel);
+
+            verifyVFSPath(fileManagementFacadeMock.browseVFS, {
+                currentDepth: 1,
+                parent: "/",
+                currentPath: "",
+                rootRelativePath: "images",
+                acceptorRootPath: "images"
+            });
+        });
+
+        it("should return VFS contents for sub1 folder in images acceptor root", async () => {
+
+            // given
+            fileManagementFacadeMock.browseVFS.resolves(vfsContent);
+
+            // when
+            const result = await filesController.browse(browseRequestImagesSub1);
+
+            // then
+            expect(result).not.toBeNull();
+            expect(result.status).toBe(HttpStatus.OK);
+            expect(result.sendAsRaw).toBe(false);
+            expect(result.content).toStrictEqual(vfsBrowserModel);
+
+            verifyVFSPath(fileManagementFacadeMock.browseVFS, {
+                currentDepth: 2,
+                parent: "/images",
+                currentPath: "sub1",
+                rootRelativePath: "images/sub1",
+                acceptorRootPath: "images"
+            });
+        });
+
+        it("should return VFS contents for deep1 folder in sub1 folder in images acceptor root", async () => {
+
+            // given
+            fileManagementFacadeMock.browseVFS.resolves(vfsContent);
+
+            // when
+            const result = await filesController.browse(browseRequestImagesDeepSub);
+
+            // then
+            expect(result).not.toBeNull();
+            expect(result.status).toBe(HttpStatus.OK);
+            expect(result.sendAsRaw).toBe(false);
+            expect(result.content).toStrictEqual(vfsBrowserModel);
+
+            verifyVFSPath(fileManagementFacadeMock.browseVFS, {
+                currentDepth: 3,
+                parent: "/images/sub1",
+                currentPath: "sub1/deep1",
+                rootRelativePath: "images/sub1/deep1",
+                acceptorRootPath: "images"
+            });
+        });
+
+        function verifyVFSPath(browseVFSMock: SinonStub, expectedVFSPath: {[key in keyof VFSPath]: any}): void {
+
+            const vfsPath = browseVFSMock.getCall(0).firstArg as VFSPath;
+
+            expect(vfsPath.currentPath).toBe(expectedVFSPath.currentPath);
+            expect(vfsPath.acceptorRootPath).toBe(expectedVFSPath.acceptorRootPath);
+            expect(vfsPath.parent).toBe(expectedVFSPath.parent);
+            expect(vfsPath.rootRelativePath).toBe(expectedVFSPath.rootRelativePath);
+            expect(vfsPath.currentDepth).toBe(expectedVFSPath.currentDepth);
+        }
     });
 
     describe("Test scenarios for #uploadFile", () => {

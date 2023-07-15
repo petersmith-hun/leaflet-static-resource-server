@@ -52,6 +52,7 @@ describe("Unit tests for ControllerRegistration", () => {
             await _assertRegistration(result, "put", "/files", "/:pathUUID", filesControllerMock.updateFileMetaInfo);
             await _assertRegistration(result, "delete", "/files", "/:pathUUID", filesControllerMock.deleteFile);
             await _assertRegistration(result, "get", "/files", "/:pathUUID/:storedFilename", filesControllerMock.download, 1);
+            await _assertRegistration(result, "get", "/files", ["/browse", "/browse/:path([A-Za-z0-9_-]*)"], filesControllerMock.browse);
 
             parameterlessHelperStub.restore();
             parameterizedHelperStub.restore();
@@ -71,10 +72,10 @@ describe("Unit tests for ControllerRegistration", () => {
         });
     });
 
-    async function _assertRegistration(router: RouterStub, method: string, controller: string, path: string, controllerMock: SinonStub, numberOfHandlers: number = 2) {
+    async function _assertRegistration(router: RouterStub, method: string, controller: string, path: string | string[], controllerMock: SinonStub, numberOfHandlers: number = 2) {
 
         const controllerGroup = router.root.get(controller);
-        const endpoint = controllerGroup!.endpoints.find(endpoint => endpoint[0] == method && endpoint[1] == path);
+        const endpoint = controllerGroup!.endpoints.find(endpoint => endpoint[0] == method && (endpoint[1] == path || JSON.stringify(endpoint[1]) == JSON.stringify(path)));
 
         expect(endpoint).not.toBeUndefined();
 
@@ -146,5 +147,6 @@ class FilesControllerStub {
     async createDirectory(): Promise<void> {}
     async updateFileMetaInfo(): Promise<void> {}
     async deleteFile(): Promise<void> {}
+    async browse(): Promise<void> {}
     controllerType(): any {};
 }

@@ -1,15 +1,16 @@
-import {Logger} from "tslog";
-import {Service} from "typedi";
-import {InMemoryCache} from "../../helper/cache";
-import {Optional} from "../../helper/common-utilities";
+import { Logger } from "tslog";
+import { Service } from "typedi";
+import { InMemoryCache } from "../../helper/cache";
+import { Optional } from "../../helper/common-utilities";
 import LoggerFactory from "../../helper/logger-factory";
-import {AcceptorInfo, DownloadableFileWrapper} from "../model/file-browser-api";
-import {FileInput} from "../model/file-input";
+import { AcceptorInfo, DownloadableFileWrapper, VFSContent, VFSPath } from "../model/file-browser-api";
+import { FileInput } from "../model/file-input";
 import {
     UploadedFileCreateAttributes,
     UploadedFileDescriptor,
     UploadedFileUpdateAttributes
 } from "../model/uploaded-file";
+import VFSBrowser from "./browser/vfs-browser";
 import FileManagementService from "./file-management-service";
 import FileMetadataService from "./file-metadata-service";
 
@@ -26,11 +27,14 @@ export default class FileManagementFacade {
     private readonly fileMetadataService: FileMetadataService;
     private readonly fileManagementService: FileManagementService;
     private readonly cache: InMemoryCache;
+    private readonly vfsBrowser: VFSBrowser;
 
-    constructor(fileMetadataService: FileMetadataService, fileManagementService: FileManagementService, cache: InMemoryCache) {
+    constructor(fileMetadataService: FileMetadataService, fileManagementService: FileManagementService,
+                cache: InMemoryCache, vfsBrowser: VFSBrowser) {
         this.fileMetadataService = fileMetadataService;
         this.fileManagementService = fileManagementService;
         this.cache = cache;
+        this.vfsBrowser = vfsBrowser;
     }
 
 
@@ -150,5 +154,14 @@ export default class FileManagementFacade {
      */
     getAcceptorInfo(): AcceptorInfo[] {
         return this.fileManagementService.getAcceptorInfo();
+    }
+
+    /**
+     * Retrieves the contents of the VFS on the specified path.
+     *
+     * @param vfsPath VFSPath object representing the selected path
+     */
+    async browseVFS(vfsPath: VFSPath): Promise<VFSContent> {
+        return this.vfsBrowser.browseVFS(vfsPath);
     }
 }

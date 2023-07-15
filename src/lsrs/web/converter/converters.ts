@@ -1,6 +1,7 @@
+import { VFSContent } from "../../core/model/file-browser-api";
 import {FileInput, MIMEType} from "../../core/model/file-input";
 import {UploadedFileCreateAttributes, UploadedFileUpdateAttributes} from "../../core/model/uploaded-file";
-import {FileModel, FileUploadRequestModel, UpdateFileMetadataRequestModel} from "../model/files";
+import { FileModel, FileUploadRequestModel, UpdateFileMetadataRequestModel, VFSBrowserModel } from "../model/files";
 
 /**
  * Converts an UploadedFileCreateAttributes object to FileModel.
@@ -15,6 +16,7 @@ export function convertUploadedFile(uploadedFile: UploadedFileCreateAttributes):
         acceptedAs: uploadedFile.acceptedAs,
         description: uploadedFile.description,
         path: uploadedFile.path,
+        pathUUID: uploadedFile.pathUUID,
         reference: `/${uploadedFile.pathUUID}/${uploadedFile.storedFilename}`
     }
 }
@@ -38,7 +40,7 @@ export function convertUploadRequest(fileUploadRequestModel: FileUploadRequestMo
 }
 
 /**
- * Converts an UpdateFileMetadataRequestModel objectto UploadedFileUpdateAttributes.
+ * Converts an UpdateFileMetadataRequestModel object to UploadedFileUpdateAttributes.
  *
  * @param updateFileMetadataRequestModel source UpdateFileMetadataRequestModel object
  * @returns converted object as UploadedFileUpdateAttributes
@@ -48,5 +50,21 @@ export function convertMetadataUpdateRequest(updateFileMetadataRequestModel: Upd
     return {
         originalFilename: updateFileMetadataRequestModel.originalFilename,
         description: updateFileMetadataRequestModel.description
+    }
+}
+
+/**
+ * Converts a VFSContent object to VFSBrowserModel.
+ *
+ * @param vfsContent source VFSContent object
+ * @returns converted object as VFSBrowserModel
+ */
+export function convertBrowserResponse(vfsContent: VFSContent): VFSBrowserModel {
+
+    return {
+        parent: vfsContent.parent,
+        currentPath: vfsContent.currentPath,
+        directories: vfsContent.directories,
+        files: vfsContent.uploadedFiles.map(convertUploadedFile)
     }
 }

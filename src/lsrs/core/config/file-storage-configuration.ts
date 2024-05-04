@@ -1,23 +1,24 @@
-import ConfigurationProvider, { Acceptor, StorageConfig } from "@app/core/config/configuration-provider";
+import ConfigurationProvider, {
+    Acceptor,
+    configurationProvider,
+    StorageConfig
+} from "@app/core/config/configuration-provider";
 import { GenericError } from "@app/core/error/error-types";
 import { Configuration } from "@app/helper/common-utilities";
 import LoggerFactory from "@app/helper/logger-factory";
-import { ConfigurationToken } from "@app/helper/typedi-tokens";
 import * as fs from "fs";
 import path from "path";
-import { Inject, Service } from "typedi";
 
 /**
  * Configuration for creating the file storage of LSRS.
  * Creates the storage root and acceptor root folders and sets the permission for them.
  */
-@Service({ multiple: true, id: ConfigurationToken })
 export default class FileStorageConfiguration implements Configuration {
 
     private readonly logger = LoggerFactory.getLogger(FileStorageConfiguration);
     private readonly storageConfig: StorageConfig;
 
-    constructor(@Inject() configurationProvider: ConfigurationProvider) {
+    constructor(configurationProvider: ConfigurationProvider) {
         this.storageConfig = configurationProvider.getStorageConfig();
     }
 
@@ -72,3 +73,5 @@ export default class FileStorageConfiguration implements Configuration {
         });
     }
 }
+
+export const fileStorageConfiguration = new FileStorageConfiguration(configurationProvider);

@@ -1,7 +1,7 @@
+import ConfigurationProvider, { LogLevel } from "@app/core/config/configuration-provider";
 import * as fs from "fs";
-import {Sequelize} from "sequelize";
+import { Sequelize } from "sequelize";
 import { ILogObj, Logger } from "tslog";
-import ConfigurationProvider, { LogLevel } from "../../src/lsrs/core/config/configuration-provider";
 
 /**
  * Utilities for handling the mocked database during Cucumber test execution.

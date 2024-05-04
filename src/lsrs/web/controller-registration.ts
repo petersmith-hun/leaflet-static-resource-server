@@ -1,9 +1,8 @@
-import ConfigurationProvider, { AuthConfig } from "@app/core/config/configuration-provider";
+import ConfigurationProvider, { AuthConfig, configurationProvider } from "@app/core/config/configuration-provider";
 import { GenericError } from "@app/core/error/error-types";
-import { ControllerToken } from "@app/helper/typedi-tokens";
-import ActuatorController from "@app/web/controller/actuator-controller";
+import ActuatorController, { actuatorController } from "@app/web/controller/actuator-controller";
 import { Controller, ControllerType } from "@app/web/controller/controller";
-import FilesController from "@app/web/controller/files-controller";
+import FilesController, { filesController } from "@app/web/controller/files-controller";
 import { Scope } from "@app/web/model/common";
 import {
     BrowseRequest,
@@ -16,18 +15,16 @@ import { formidableUploadMiddleware } from "@app/web/utility/formidable-support"
 import { ParameterizedMappingHelper, ParameterlessMappingHelper } from "@app/web/utility/mapping-helper";
 import { RequestHandler, Router } from "express";
 import { auth, requiredScopes } from "express-oauth2-jwt-bearer";
-import { InjectMany, Service } from "typedi";
 
 /**
  * Component to handle controller registrations.
  */
-@Service()
 export default class ControllerRegistration {
 
     private readonly controllerMap: Map<ControllerType, Controller>;
     private readonly authConfig: AuthConfig;
 
-    constructor(@InjectMany(ControllerToken) controllers: Controller[], configurationProvider: ConfigurationProvider) {
+    constructor(configurationProvider: ConfigurationProvider, controllers: Controller[]) {
         this.controllerMap = new Map(controllers.map(controller => [controller.controllerType(), controller]));
         this.authConfig = configurationProvider.getAuthConfig();
     }
@@ -102,3 +99,8 @@ export default class ControllerRegistration {
         ];
     }
 }
+
+export const controllerRegistration = new ControllerRegistration(configurationProvider, [
+    actuatorController,
+    filesController
+]);

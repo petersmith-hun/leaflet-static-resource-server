@@ -1,7 +1,6 @@
+import { configurationProvider, LoggingConfig } from "@app/core/config/configuration-provider";
 import { AsyncLocalStorage } from "async_hooks";
 import { ILogObj, ISettingsParam, Logger } from "tslog";
-import { Container } from "typedi";
-import ConfigurationProvider, { LoggingConfig } from "@app/core/config/configuration-provider";
 
 /**
  * Factory component to configure logging and create loggers.
@@ -19,7 +18,7 @@ export default class LoggerFactory {
     static init() {
         if (!this.initialized) {
             this.initialized = true;
-            this.loggingConfig = Container.get(ConfigurationProvider).getLoggingConfig();
+            this.loggingConfig = configurationProvider.getLoggingConfig();
             this.config.minLevel = this.loggingConfig.minLevel;
             this.config.type = this.loggingConfig.enableJsonLogging
                 ? "json"

@@ -1,12 +1,10 @@
 import LoggerFactory from "@app/helper/logger-factory";
-import { Service } from "typedi";
 
 /**
  * In-memory caching component.
  * Uses a 2-level map, where the first level is the cache group (its name being the key) and the second level is
  * storing arbitrary key-value pairs. Caches are automatically created upon first usage.
  */
-@Service()
 export class InMemoryCache {
 
     private readonly contents: Map<string, Map<any, any>> = new Map();
@@ -76,3 +74,5 @@ export class InMemoryCache {
         }
     }
 }
+
+export const inMemoryCache = new InMemoryCache();

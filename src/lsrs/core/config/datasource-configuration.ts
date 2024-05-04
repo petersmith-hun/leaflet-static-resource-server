@@ -1,25 +1,25 @@
-import ConfigurationProvider, { DatasourceConfig } from "@app/core/config/configuration-provider";
+import ConfigurationProvider, {
+    configurationProvider,
+    DatasourceConfig
+} from "@app/core/config/configuration-provider";
 import { GenericError } from "@app/core/error/error-types";
 import { UploadedFile, uploadedFileModelAttributes } from "@app/core/model/uploaded-file";
 import { Configuration } from "@app/helper/common-utilities";
 import LoggerFactory from "@app/helper/logger-factory";
-import { ConfigurationToken } from "@app/helper/typedi-tokens";
 import { Sequelize } from "sequelize";
-import { Inject, Service } from "typedi";
 
 /**
  * Datasource configuration triggered by TypeDI. After configuring the connection, the implementation verifies that the
  * specified database is accessible, and also registers the models. Detecting the database to be inaccessible triggers
  * shutting down the application.
  */
-@Service({multiple: true, id: ConfigurationToken})
 export default class DatasourceConfiguration implements Configuration {
 
     private readonly logger = LoggerFactory.getLogger(DatasourceConfiguration);
     private readonly datasourceConfig: DatasourceConfig;
     private sequelize!: Sequelize;
 
-    constructor(@Inject() configurationProvider: ConfigurationProvider) {
+    constructor(configurationProvider: ConfigurationProvider) {
         this.datasourceConfig = configurationProvider.getDatasourceConfig();
     }
 
@@ -54,3 +54,5 @@ export default class DatasourceConfiguration implements Configuration {
             updatedAt: false});
     }
 }
+
+export const datasourceConfiguration = new DatasourceConfiguration(configurationProvider);

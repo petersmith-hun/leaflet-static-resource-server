@@ -1,7 +1,7 @@
-import {ConstraintViolation} from "../../src/lsrs/web/model/common";
-import {DirectoryModel, FileModel} from "../../src/lsrs/web/model/files";
-import DataRegistry from "./data-registry";
-import {Attribute} from "./test-constants";
+import DataRegistry from "@acceptance/support/data-registry";
+import { Attribute } from "@acceptance/support/test-constants";
+import { ConstraintViolation } from "@app/web/model/common";
+import { DirectoryModel, FileModel } from "@app/web/model/files";
 
 type ConversionTuple<Type> = [keyof Type, (value: string) => any | any[]];
 const splitFunction = (item: string) => item.split(", ");

@@ -5,18 +5,16 @@ import {
     UploadedFileDescriptor,
     UploadedFileUpdateAttributes
 } from "@app/core/model/uploaded-file";
-import VFSBrowser from "@app/core/service/browser/vfs-browser";
-import FileManagementService from "@app/core/service/file-management-service";
-import FileMetadataService from "@app/core/service/file-metadata-service";
-import { InMemoryCache } from "@app/helper/cache";
+import VFSBrowser, { vfsBrowser } from "@app/core/service/browser/vfs-browser";
+import FileManagementService, { fileManagementService } from "@app/core/service/file-management-service";
+import FileMetadataService, { fileMetadataService } from "@app/core/service/file-metadata-service";
+import { inMemoryCache, InMemoryCache } from "@app/helper/cache";
 import { Optional } from "@app/helper/common-utilities";
 import LoggerFactory from "@app/helper/logger-factory";
-import { Service } from "typedi";
 
 /**
  * Facade for file management operations, including info storage.
  */
-@Service()
 export default class FileManagementFacade {
 
     private static readonly metadataCache = "metadata";
@@ -164,3 +162,5 @@ export default class FileManagementFacade {
         return this.vfsBrowser.browseVFS(vfsPath);
     }
 }
+
+export const fileManagementFacade = new FileManagementFacade(fileMetadataService, fileManagementService, inMemoryCache, vfsBrowser);

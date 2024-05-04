@@ -1,13 +1,15 @@
-import ConfigurationProvider, { Acceptor, StorageConfig } from "@app/core/config/configuration-provider";
+import ConfigurationProvider, {
+    Acceptor,
+    configurationProvider,
+    StorageConfig
+} from "@app/core/config/configuration-provider";
 import { FileInput } from "@app/core/model/file-input";
 import path from "path";
 import removeAccents from "remove-accents";
-import { Service } from "typedi";
 
 /**
  * File path operations.
  */
-@Service()
 export default class PathUtility {
 
     private readonly pathNormalizationPattern = new RegExp("\\\\", "g");
@@ -68,3 +70,5 @@ export default class PathUtility {
         return path.replace(this.pathNormalizationPattern, "/");
     }
 }
+
+export const pathUtility = new PathUtility(configurationProvider);

@@ -1,8 +1,8 @@
+import { uploadPath } from "@acceptance/support/init";
+import { TestData } from "@acceptance/support/test-constants";
+import { LogLevel } from "@app/core/config/configuration-provider";
 import * as fs from "fs";
 import { ILogObj, Logger } from "tslog";
-import { LogLevel } from "../../src/lsrs/core/config/configuration-provider";
-import {uploadPath} from "./init";
-import {TestData} from "./test-constants";
 
 /**
  * Utilities for managing LSRS while executing the Cucumber acceptance tests.

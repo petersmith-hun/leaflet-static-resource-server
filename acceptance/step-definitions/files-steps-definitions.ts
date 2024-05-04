@@ -1,16 +1,20 @@
-import {BeforeAll, DataTable, Given, Then, When} from "@cucumber/cucumber";
-import {AxiosResponseHeaders} from "axios";
-import {isUUID} from "class-validator";
-import {expect} from "expect";
+import AuthManager from "@acceptance/support/auth-manager";
+import DataRegistry from "@acceptance/support/data-registry";
+import {
+    convertConstraintViolation,
+    convertDirectoryModel,
+    convertFileModel
+} from "@acceptance/support/datatable-utils";
+import { uploadPath } from "@acceptance/support/init";
+import LSRSRestClient from "@acceptance/support/lsrs-rest-client";
+import { Attribute } from "@acceptance/support/test-constants";
+import { ConstraintViolationErrorMessage, Scope } from "@app/web/model/common";
+import { DirectoryListModel, FileListModel, FileModel } from "@app/web/model/files";
+import { BeforeAll, DataTable, Given, Then, When } from "@cucumber/cucumber";
+import { AxiosResponseHeaders } from "axios";
+import { isUUID } from "class-validator";
+import { expect } from "expect";
 import * as fs from "fs";
-import {ConstraintViolationErrorMessage, Scope} from "../../src/lsrs/web/model/common";
-import {DirectoryListModel, FileListModel, FileModel} from "../../src/lsrs/web/model/files";
-import AuthManager from "../support/auth-manager";
-import DataRegistry from "../support/data-registry";
-import {convertConstraintViolation, convertDirectoryModel, convertFileModel} from "../support/datatable-utils";
-import {uploadPath} from "../support/init";
-import LSRSRestClient from "../support/lsrs-rest-client";
-import {Attribute} from "../support/test-constants";
 
 let restClient: LSRSRestClient;
 const scopeMap = new Map<string, Scope>([

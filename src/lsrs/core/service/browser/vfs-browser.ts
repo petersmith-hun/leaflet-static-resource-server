@@ -1,13 +1,11 @@
 import { VFSContent, VFSFolder, VFSPath } from "@app/core/model/file-browser-api";
 import { UploadedFileDescriptor } from "@app/core/model/uploaded-file";
-import FileManagementService from "@app/core/service/file-management-service";
-import FileMetadataService from "@app/core/service/file-metadata-service";
-import { Service } from "typedi";
+import FileManagementService, { fileManagementService } from "@app/core/service/file-management-service";
+import FileMetadataService, { fileMetadataService } from "@app/core/service/file-metadata-service";
 
 /**
  * Virtual file system browser implementation. Able to list the folders and files under a specific path in the VFS.
  */
-@Service()
 export default class VFSBrowser {
 
     private readonly fileMetadataService: FileMetadataService;
@@ -93,3 +91,5 @@ export default class VFSBrowser {
         return folderPath.split("/").pop() ?? "";
     }
 }
+
+export const vfsBrowser = new VFSBrowser(fileMetadataService, fileManagementService);

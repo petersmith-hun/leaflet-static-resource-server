@@ -1,12 +1,12 @@
-import axios, {AxiosHeaders, AxiosRequestConfig, AxiosResponse} from "axios";
-import {expect} from "expect";
+import DataRegistry from "@acceptance/support/data-registry";
+import { Attribute } from "@acceptance/support/test-constants";
+import ConfigurationProvider from "@app/core/config/configuration-provider";
+import { UploadedFileUpdateAttributes } from "@app/core/model/uploaded-file";
+import { HealthResponse, InfoResponse } from "@app/web/model/actuator";
+import { DirectoryCreationRequestModel, FileListModel, FileModel } from "@app/web/model/files";
+import axios, { AxiosHeaders, AxiosRequestConfig, AxiosResponse } from "axios";
+import { expect } from "expect";
 import FormData from "form-data";
-import ConfigurationProvider from "../../src/lsrs/core/config/configuration-provider";
-import {UploadedFileUpdateAttributes} from "../../src/lsrs/core/model/uploaded-file";
-import {HealthResponse, InfoResponse} from "../../src/lsrs/web/model/actuator";
-import {DirectoryCreationRequestModel, FileListModel, FileModel} from "../../src/lsrs/web/model/files";
-import DataRegistry from "./data-registry";
-import {Attribute} from "./test-constants";
 
 /**
  * REST client implementation for calling LSRS during Cucumber test execution.

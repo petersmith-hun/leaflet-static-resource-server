@@ -22,6 +22,18 @@
       ],
       "@build-time": [
         "build-time.json"
+      ],
+      "@acceptance/*": [
+        "acceptance/*"
+      ],
+      "@testdata/dao": [
+        "tests/lsrs/core/dao/uploaded-file-dao.testdata"
+      ],
+      "@testdata/service": [
+        "tests/lsrs/core/service/service.testdata"
+      ],
+      "@testdata/web": [
+        "tests/lsrs/web/web.testdata"
       ]
     }
   },

@@ -1,12 +1,12 @@
-import {After, AfterAll, BeforeAll, Then} from "@cucumber/cucumber";
-import {AxiosResponse} from "axios";
-import {expect} from "expect";
-import {HealthResponse} from "../../src/lsrs/web/model/actuator";
-import {HttpStatus} from "../../src/lsrs/web/model/common";
-import ApplicationManager from "../support/application-manager";
-import AuthManager from "../support/auth-manager";
-import DataRegistry from "../support/data-registry";
-import DatasourceManager from "../support/datasource-manager";
+import ApplicationManager from "@acceptance/support/application-manager";
+import AuthManager from "@acceptance/support/auth-manager";
+import DataRegistry from "@acceptance/support/data-registry";
+import DatasourceManager from "@acceptance/support/datasource-manager";
+import { HealthResponse } from "@app/web/model/actuator";
+import { HttpStatus } from "@app/web/model/common";
+import { After, AfterAll, BeforeAll, Then } from "@cucumber/cucumber";
+import { AxiosResponse } from "axios";
+import { expect } from "expect";
 
 // -- set up --
 BeforeAll({timeout: 10000}, async () => {

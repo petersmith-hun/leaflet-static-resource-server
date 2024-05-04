@@ -1,6 +1,7 @@
-import config from "config";
-import { Service } from "typedi";
 import { FileInput, MIMEType } from "@app/core/model/file-input";
+import config from "config";
+import { buildTime } from "@build-time";
+import { version } from "@package";
 
 type MapValue = string | number | boolean | object | undefined;
 type MapNode = Map<string, MapValue> | undefined;
@@ -169,10 +170,14 @@ export class AppInfoConfig {
 
     readonly appName: string;
     readonly abbreviation: string;
+    readonly version: string;
+    readonly buildTime: string;
 
     constructor(parameters: MapNode) {
         this.appName = getValue(parameters, "appName");
         this.abbreviation = getValue(parameters, "abbreviation");
+        this.version = version;
+        this.buildTime = buildTime ?? new Date().toISOString();
     }
 }
 
@@ -193,7 +198,6 @@ function getAcceptorValue<Type>(parameters: AcceptorConfigNode, key: AcceptorCon
 /**
  * Wrapper component for config.get calls.
  */
-@Service()
 export default class ConfigurationProvider {
 
     private readonly applicationConfig: ApplicationConfig;
@@ -245,3 +249,5 @@ export default class ConfigurationProvider {
         return this.applicationConfig.appInfo;
     }
 }
+
+export const configurationProvider = new ConfigurationProvider();

@@ -6,12 +6,10 @@ import {
     UploadedFileUpdateAttributes
 } from "@app/core/model/uploaded-file";
 import { Optional } from "@app/helper/common-utilities";
-import { Service } from "typedi";
 
 /**
  * DAO implementation based on Sequelize model operations for handling the metadata of the uploaded files.
  */
-@Service()
 export default class UploadedFileDAO {
 
     /**
@@ -87,3 +85,5 @@ export default class UploadedFileDAO {
         return await UploadedFile.create(uploadedFile);
     }
 }
+
+export const uploadedFileDAO = new UploadedFileDAO();

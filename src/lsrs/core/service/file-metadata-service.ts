@@ -1,4 +1,4 @@
-import UploadedFileDAO from "@app/core/dao/uploaded-file-dao";
+import UploadedFileDAO, { uploadedFileDAO } from "@app/core/dao/uploaded-file-dao";
 import { ConflictingResourceError, GenericError, ResourceNotFoundError } from "@app/core/error/error-types";
 import {
     UploadedFile,
@@ -7,17 +7,15 @@ import {
     UploadedFileUpdateAttributes
 } from "@app/core/model/uploaded-file";
 import { UniqueConstraintError } from "sequelize";
-import { Inject, Service } from "typedi";
 
 /**
  * Uploaded file metadata operations interface.
  */
-@Service()
 export default class FileMetadataService {
 
     private readonly uploadedFileDAO: UploadedFileDAO;
 
-    constructor(@Inject() uploadedFileDAO: UploadedFileDAO) {
+    constructor(uploadedFileDAO: UploadedFileDAO) {
         this.uploadedFileDAO = uploadedFileDAO;
     }
 
@@ -93,3 +91,5 @@ export default class FileMetadataService {
             .map(uploadedFile => uploadedFile.dataValues);
     }
 }
+
+export const fileMetadataService = new FileMetadataService(uploadedFileDAO);

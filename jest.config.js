@@ -2,7 +2,6 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
-  setupFiles: ["./test/jest-setup.ts"],
   collectCoverage: true,
   collectCoverageFrom: [
     "src/lsrs/core/**/*.ts",
@@ -11,5 +10,13 @@ module.exports = {
   ],
   coverageReporters: ["text", "html"],
   coverageThreshold: {global: {lines: 90, branches: 80}},
-  maxWorkers: 2
+  maxWorkers: 2,
+  moduleNameMapper: {
+    '@app/(.*)': '<rootDir>/src/lsrs/$1',
+    '@package': '<rootDir>/package.json',
+    '@build-time': '<rootDir>/build-time.json',
+    '@testdata/dao': '<rootDir>/tests/lsrs/core/dao/uploaded-file-dao.testdata',
+    '@testdata/service': '<rootDir>/tests/lsrs/core/service/service.testdata',
+    '@testdata/web': '<rootDir>/tests/lsrs/web/web.testdata',
+  }
 };

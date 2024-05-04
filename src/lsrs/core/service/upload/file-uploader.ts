@@ -1,18 +1,16 @@
-import ConfigurationProvider, { Acceptor } from "@app/core/config/configuration-provider";
+import ConfigurationProvider, { Acceptor, configurationProvider } from "@app/core/config/configuration-provider";
 import { GenericError } from "@app/core/error/error-types";
 import { FileInput } from "@app/core/model/file-input";
 import { UploadedFileCreateAttributes } from "@app/core/model/uploaded-file";
-import PathUtility from "@app/core/service/upload/path-utility";
+import PathUtility, { pathUtility } from "@app/core/service/upload/path-utility";
 import { Optional } from "@app/helper/common-utilities";
 import LoggerFactory from "@app/helper/logger-factory";
 import * as fs from "fs";
-import { Service } from "typedi";
 import { v4 as UUID } from "uuid";
 
 /**
  * File upload logic.
  */
-@Service()
 export default class FileUploader {
 
     private readonly logger = LoggerFactory.getLogger(FileUploader);
@@ -72,3 +70,5 @@ export default class FileUploader {
         }
     }
 }
+
+export const fileUploader = new FileUploader(configurationProvider, pathUtility);

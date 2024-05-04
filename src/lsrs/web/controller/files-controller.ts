@@ -1,9 +1,12 @@
-import ConfigurationProvider, { ServerConfig, StorageConfig } from "@app/core/config/configuration-provider";
+import ConfigurationProvider, {
+    configurationProvider,
+    ServerConfig,
+    StorageConfig
+} from "@app/core/config/configuration-provider";
 import { ResourceNotFoundError } from "@app/core/error/error-types";
 import { VFSPath } from "@app/core/model/file-browser-api";
 import { UploadedFile } from "@app/core/model/uploaded-file";
-import FileManagementFacade from "@app/core/service/file-management-facade";
-import { ControllerToken } from "@app/helper/typedi-tokens";
+import FileManagementFacade, { fileManagementFacade } from "@app/core/service/file-management-facade";
 import { Controller, ControllerType } from "@app/web/controller/controller";
 import {
     convertBrowserResponse,
@@ -25,12 +28,10 @@ import {
     VFSBrowserModel
 } from "@app/web/model/files";
 import { Validated } from "@app/web/utility/validator";
-import { Service } from "typedi";
 
 /**
  * Controller for file related endpoints.
  */
-@Service({eager: true, multiple: true, id: ControllerToken})
 export default class FilesController implements Controller {
 
     private readonly fileManagementFacade: FileManagementFacade;
@@ -187,3 +188,5 @@ export default class FilesController implements Controller {
         return `${this.serverConfig.contextPath}/files/${pathUUID}`;
     }
 }
+
+export const filesController = new FilesController(fileManagementFacade, configurationProvider);

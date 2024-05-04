@@ -1,8 +1,8 @@
+import ConfigurationProvider, { Acceptor, StorageConfig } from "@app/core/config/configuration-provider";
+import { FileInput } from "@app/core/model/file-input";
 import path from "path";
 import removeAccents from "remove-accents";
-import {Service} from "typedi";
-import ConfigurationProvider, {Acceptor, StorageConfig} from "../../config/configuration-provider";
-import {FileInput} from "../../model/file-input";
+import { Service } from "typedi";
 
 /**
  * File path operations.

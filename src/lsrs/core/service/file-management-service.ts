@@ -1,14 +1,14 @@
+import ConfigurationProvider, { Acceptor } from "@app/core/config/configuration-provider";
+import { InaccessibleFileError, InvalidFileInputError } from "@app/core/error/error-types";
+import { AcceptorInfo } from "@app/core/model/file-browser-api";
+import { FileInput } from "@app/core/model/file-input";
+import { UploadedFileCreateAttributes } from "@app/core/model/uploaded-file";
+import FileUploader from "@app/core/service/upload/file-uploader";
+import PathUtility from "@app/core/service/upload/path-utility";
+import LoggerFactory from "@app/helper/logger-factory";
 import * as fs from "fs";
 import path from "path";
 import { Service } from "typedi";
-import LoggerFactory from "../../helper/logger-factory";
-import ConfigurationProvider, { Acceptor } from "../config/configuration-provider";
-import { InaccessibleFileError, InvalidFileInputError } from "../error/error-types";
-import { AcceptorInfo } from "../model/file-browser-api";
-import { FileInput } from "../model/file-input";
-import { UploadedFileCreateAttributes } from "../model/uploaded-file";
-import FileUploader from "./upload/file-uploader";
-import PathUtility from "./upload/path-utility";
 
 /**
  * Service to handle file operations.

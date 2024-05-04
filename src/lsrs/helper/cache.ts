@@ -1,5 +1,5 @@
+import LoggerFactory from "@app/helper/logger-factory";
 import { Service } from "typedi";
-import LoggerFactory from "./logger-factory";
 
 /**
  * In-memory caching component.

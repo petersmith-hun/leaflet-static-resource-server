@@ -1,11 +1,11 @@
+import ConfigurationProvider, { Acceptor, StorageConfig } from "@app/core/config/configuration-provider";
+import { GenericError } from "@app/core/error/error-types";
+import { Configuration } from "@app/helper/common-utilities";
+import LoggerFactory from "@app/helper/logger-factory";
+import { ConfigurationToken } from "@app/helper/typedi-tokens";
 import * as fs from "fs";
 import path from "path";
 import { Inject, Service } from "typedi";
-import { Configuration } from "../../helper/common-utilities";
-import LoggerFactory from "../../helper/logger-factory";
-import { ConfigurationToken } from "../../helper/typedi-tokens";
-import { GenericError } from "../error/error-types";
-import ConfigurationProvider, { Acceptor, StorageConfig } from "./configuration-provider";
 
 /**
  * Configuration for creating the file storage of LSRS.

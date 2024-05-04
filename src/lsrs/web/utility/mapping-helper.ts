@@ -1,5 +1,5 @@
-import {NextFunction, Request, Response} from "express";
-import {ResponseWrapper} from "../model/common";
+import { ResponseWrapper } from "@app/web/model/common";
+import { NextFunction, Request, Response } from "express";
 
 /**
  * Abstract base implementation providing a convenient way to register an endpoint in Express.

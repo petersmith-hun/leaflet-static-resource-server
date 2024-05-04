@@ -1,12 +1,12 @@
-import {Service} from "typedi";
-import {Optional} from "../../helper/common-utilities";
-import {ResourceNotFoundError} from "../error/error-types";
+import { ResourceNotFoundError } from "@app/core/error/error-types";
 import {
     UploadedFile,
     UploadedFileAdministrativeAttributes,
     UploadedFileCreateAttributes,
     UploadedFileUpdateAttributes
-} from "../model/uploaded-file";
+} from "@app/core/model/uploaded-file";
+import { Optional } from "@app/helper/common-utilities";
+import { Service } from "typedi";
 
 /**
  * DAO implementation based on Sequelize model operations for handling the metadata of the uploaded files.

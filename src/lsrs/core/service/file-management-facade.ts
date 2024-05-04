@@ -1,17 +1,17 @@
-import { Service } from "typedi";
-import { InMemoryCache } from "../../helper/cache";
-import { Optional } from "../../helper/common-utilities";
-import LoggerFactory from "../../helper/logger-factory";
-import { AcceptorInfo, DownloadableFileWrapper, VFSContent, VFSPath } from "../model/file-browser-api";
-import { FileInput } from "../model/file-input";
+import { AcceptorInfo, DownloadableFileWrapper, VFSContent, VFSPath } from "@app/core/model/file-browser-api";
+import { FileInput } from "@app/core/model/file-input";
 import {
     UploadedFileCreateAttributes,
     UploadedFileDescriptor,
     UploadedFileUpdateAttributes
-} from "../model/uploaded-file";
-import VFSBrowser from "./browser/vfs-browser";
-import FileManagementService from "./file-management-service";
-import FileMetadataService from "./file-metadata-service";
+} from "@app/core/model/uploaded-file";
+import VFSBrowser from "@app/core/service/browser/vfs-browser";
+import FileManagementService from "@app/core/service/file-management-service";
+import FileMetadataService from "@app/core/service/file-metadata-service";
+import { InMemoryCache } from "@app/helper/cache";
+import { Optional } from "@app/helper/common-utilities";
+import LoggerFactory from "@app/helper/logger-factory";
+import { Service } from "typedi";
 
 /**
  * Facade for file management operations, including info storage.

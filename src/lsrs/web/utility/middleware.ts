@@ -1,15 +1,15 @@
-import { NextFunction, Request, Response } from "express";
-import { InsufficientScopeError, InvalidTokenError, UnauthorizedError } from "express-oauth2-jwt-bearer";
-import { v4 as UUID } from "uuid";
 import {
     ConflictingResourceError,
     InaccessibleFileError,
     InvalidFileInputError,
     ResourceNotFoundError
-} from "../../core/error/error-types";
-import LoggerFactory from "../../helper/logger-factory";
-import { InvalidRequestError } from "../error/api-error-types";
-import { ConstraintViolationErrorMessage, ErrorMessage, HttpStatus } from "../model/common";
+} from "@app/core/error/error-types";
+import LoggerFactory from "@app/helper/logger-factory";
+import { InvalidRequestError } from "@app/web/error/api-error-types";
+import { ConstraintViolationErrorMessage, ErrorMessage, HttpStatus } from "@app/web/model/common";
+import { NextFunction, Request, Response } from "express";
+import { InsufficientScopeError, InvalidTokenError, UnauthorizedError } from "express-oauth2-jwt-bearer";
+import { v4 as UUID } from "uuid";
 
 const logger = LoggerFactory.getLogger("ErrorHandlerMiddleware");
 

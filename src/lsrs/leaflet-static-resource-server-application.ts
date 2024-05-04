@@ -1,10 +1,10 @@
+import ConfigurationProvider from "@app/core/config/configuration-provider";
+import LoggerFactory from "@app/helper/logger-factory";
+import { ExpressToken } from "@app/helper/typedi-tokens";
+import ControllerRegistration from "@app/web/controller-registration";
+import { errorHandlerMiddleware, requestTrackingMiddleware } from "@app/web/utility/middleware";
 import { Express, json } from "express";
 import { Inject, Service } from "typedi";
-import ConfigurationProvider from "./core/config/configuration-provider";
-import LoggerFactory from "./helper/logger-factory";
-import { ExpressToken } from "./helper/typedi-tokens";
-import ControllerRegistration from "./web/controller-registration";
-import { errorHandlerMiddleware, requestTrackingMiddleware } from "./web/utility/middleware";
 
 /**
  * Service start-up entry point for Leaflet Static Resource Server application.

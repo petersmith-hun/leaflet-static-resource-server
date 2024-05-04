@@ -1,11 +1,11 @@
+import ConfigurationProvider, { DatasourceConfig } from "@app/core/config/configuration-provider";
+import { GenericError } from "@app/core/error/error-types";
+import { UploadedFile, uploadedFileModelAttributes } from "@app/core/model/uploaded-file";
+import { Configuration } from "@app/helper/common-utilities";
+import LoggerFactory from "@app/helper/logger-factory";
+import { ConfigurationToken } from "@app/helper/typedi-tokens";
 import { Sequelize } from "sequelize";
 import { Inject, Service } from "typedi";
-import { Configuration } from "../../helper/common-utilities";
-import LoggerFactory from "../../helper/logger-factory";
-import { ConfigurationToken } from "../../helper/typedi-tokens";
-import { GenericError } from "../error/error-types";
-import { UploadedFile, uploadedFileModelAttributes } from "../model/uploaded-file";
-import ConfigurationProvider, { DatasourceConfig } from "./configuration-provider";
 
 /**
  * Datasource configuration triggered by TypeDI. After configuring the connection, the implementation verifies that the

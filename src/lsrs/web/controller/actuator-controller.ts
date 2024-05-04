@@ -1,9 +1,9 @@
-import {Container, Inject, Service} from "typedi";
-import ConfigurationProvider from "../../core/config/configuration-provider";
-import {BuildTimeToken, ControllerToken, VersionToken} from "../../helper/typedi-tokens";
-import {HealthResponse, InfoResponse} from "../model/actuator";
-import {HttpStatus, ResponseWrapper} from "../model/common";
-import {Controller, ControllerType} from "./controller";
+import ConfigurationProvider from "@app/core/config/configuration-provider";
+import { BuildTimeToken, ControllerToken, VersionToken } from "@app/helper/typedi-tokens";
+import { Controller, ControllerType } from "@app/web/controller/controller";
+import { HealthResponse, InfoResponse } from "@app/web/model/actuator";
+import { HttpStatus, ResponseWrapper } from "@app/web/model/common";
+import { Container, Inject, Service } from "typedi";
 
 /**
  * Actuator (application info and health-check) controller.

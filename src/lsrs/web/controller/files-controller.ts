@@ -1,17 +1,17 @@
-import { Service } from "typedi";
-import ConfigurationProvider, { ServerConfig, StorageConfig } from "../../core/config/configuration-provider";
-import { ResourceNotFoundError } from "../../core/error/error-types";
-import { VFSPath } from "../../core/model/file-browser-api";
-import { UploadedFile } from "../../core/model/uploaded-file";
-import FileManagementFacade from "../../core/service/file-management-facade";
-import { ControllerToken } from "../../helper/typedi-tokens";
+import ConfigurationProvider, { ServerConfig, StorageConfig } from "@app/core/config/configuration-provider";
+import { ResourceNotFoundError } from "@app/core/error/error-types";
+import { VFSPath } from "@app/core/model/file-browser-api";
+import { UploadedFile } from "@app/core/model/uploaded-file";
+import FileManagementFacade from "@app/core/service/file-management-facade";
+import { ControllerToken } from "@app/helper/typedi-tokens";
+import { Controller, ControllerType } from "@app/web/controller/controller";
 import {
     convertBrowserResponse,
     convertMetadataUpdateRequest,
     convertUploadedFile,
     convertUploadRequest
-} from "../converter/converters";
-import { header, Headers, HttpStatus, ResponseWrapper } from "../model/common";
+} from "@app/web/converter/converters";
+import { header, Headers, HttpStatus, ResponseWrapper } from "@app/web/model/common";
 import {
     BrowseRequest,
     DirectoryCreationRequestModel,
@@ -23,9 +23,9 @@ import {
     FileUploadRequestModel,
     UpdateFileMetadataRequestModel,
     VFSBrowserModel
-} from "../model/files";
-import { Validated } from "../utility/validator";
-import { Controller, ControllerType } from "./controller";
+} from "@app/web/model/files";
+import { Validated } from "@app/web/utility/validator";
+import { Service } from "typedi";
 
 /**
  * Controller for file related endpoints.

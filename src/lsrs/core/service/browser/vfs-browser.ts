@@ -1,8 +1,8 @@
+import { VFSContent, VFSFolder, VFSPath } from "@app/core/model/file-browser-api";
+import { UploadedFileDescriptor } from "@app/core/model/uploaded-file";
+import FileManagementService from "@app/core/service/file-management-service";
+import FileMetadataService from "@app/core/service/file-metadata-service";
 import { Service } from "typedi";
-import { VFSContent, VFSFolder, VFSPath } from "../../model/file-browser-api";
-import { UploadedFileDescriptor } from "../../model/uploaded-file";
-import FileManagementService from "../file-management-service";
-import FileMetadataService from "../file-metadata-service";
 
 /**
  * Virtual file system browser implementation. Able to list the folders and files under a specific path in the VFS.

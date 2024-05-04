@@ -1,6 +1,6 @@
 import config from "config";
 import { Service } from "typedi";
-import { FileInput, MIMEType } from "../model/file-input";
+import { FileInput, MIMEType } from "@app/core/model/file-input";
 
 type MapValue = string | number | boolean | object | undefined;
 type MapNode = Map<string, MapValue> | undefined;

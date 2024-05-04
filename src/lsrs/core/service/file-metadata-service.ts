@@ -1,13 +1,13 @@
-import {UniqueConstraintError} from "sequelize";
-import {Inject, Service} from "typedi";
-import UploadedFileDAO from "../dao/uploaded-file-dao";
-import {ConflictingResourceError, GenericError, ResourceNotFoundError} from "../error/error-types";
+import UploadedFileDAO from "@app/core/dao/uploaded-file-dao";
+import { ConflictingResourceError, GenericError, ResourceNotFoundError } from "@app/core/error/error-types";
 import {
     UploadedFile,
     UploadedFileCreateAttributes,
     UploadedFileDescriptor,
     UploadedFileUpdateAttributes
-} from "../model/uploaded-file";
+} from "@app/core/model/uploaded-file";
+import { UniqueConstraintError } from "sequelize";
+import { Inject, Service } from "typedi";
 
 /**
  * Uploaded file metadata operations interface.

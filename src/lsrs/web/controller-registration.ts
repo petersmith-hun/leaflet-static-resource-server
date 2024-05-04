@@ -1,22 +1,22 @@
-import { RequestHandler, Router } from "express";
-import { auth, requiredScopes } from "express-oauth2-jwt-bearer";
-import { InjectMany, Service } from "typedi";
-import ConfigurationProvider, { AuthConfig } from "../core/config/configuration-provider";
-import { GenericError } from "../core/error/error-types";
-import { ControllerToken } from "../helper/typedi-tokens";
-import ActuatorController from "./controller/actuator-controller";
-import { Controller, ControllerType } from "./controller/controller";
-import FilesController from "./controller/files-controller";
-import { Scope } from "./model/common";
+import ConfigurationProvider, { AuthConfig } from "@app/core/config/configuration-provider";
+import { GenericError } from "@app/core/error/error-types";
+import { ControllerToken } from "@app/helper/typedi-tokens";
+import ActuatorController from "@app/web/controller/actuator-controller";
+import { Controller, ControllerType } from "@app/web/controller/controller";
+import FilesController from "@app/web/controller/files-controller";
+import { Scope } from "@app/web/model/common";
 import {
     BrowseRequest,
     DirectoryCreationRequestModel,
     FileIdentifier,
     FileUploadRequestModel,
     UpdateFileMetadataRequestModel
-} from "./model/files";
-import { formidableUploadMiddleware } from "./utility/formidable-support";
-import { ParameterizedMappingHelper, ParameterlessMappingHelper } from "./utility/mapping-helper";
+} from "@app/web/model/files";
+import { formidableUploadMiddleware } from "@app/web/utility/formidable-support";
+import { ParameterizedMappingHelper, ParameterlessMappingHelper } from "@app/web/utility/mapping-helper";
+import { RequestHandler, Router } from "express";
+import { auth, requiredScopes } from "express-oauth2-jwt-bearer";
+import { InjectMany, Service } from "typedi";
 
 /**
  * Component to handle controller registrations.

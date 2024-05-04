@@ -1,8 +1,8 @@
+import { HttpStatus } from "@app/web/model/common";
 import { NextFunction, Request, Response } from "express";
 import formidable, { Part } from "formidable";
 import IncomingForm from "formidable/Formidable";
 import { Writable } from "stream";
-import { HttpStatus } from "../model/common";
 
 /**
  * File upload handler middleware for Express using Formidable form parser.

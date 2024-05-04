@@ -1,7 +1,7 @@
-import {Express} from "express";
-import {Token} from "typedi";
-import {Controller} from "../web/controller/controller";
-import {Configuration} from "./common-utilities";
+import { Configuration } from "@app/helper/common-utilities";
+import { Controller } from "@app/web/controller/controller";
+import { Express } from "express";
+import { Token } from "typedi";
 
 export const ExpressToken = new Token<Express>("express");
 export const ControllerToken = new Token<Controller>("controllers");

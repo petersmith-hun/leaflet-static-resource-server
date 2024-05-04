@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "async_hooks";
 import { ILogObj, ISettingsParam, Logger } from "tslog";
 import { Container } from "typedi";
-import ConfigurationProvider, { LoggingConfig } from "../core/config/configuration-provider";
+import ConfigurationProvider, { LoggingConfig } from "@app/core/config/configuration-provider";
 
 /**
  * Factory component to configure logging and create loggers.

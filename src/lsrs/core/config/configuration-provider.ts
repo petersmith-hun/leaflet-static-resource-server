@@ -1,7 +1,6 @@
 import config from "config";
-import {TLogLevelName} from "tslog";
-import {Service} from "typedi";
-import {FileInput, MIMEType} from "../model/file-input";
+import { Service } from "typedi";
+import { FileInput, MIMEType } from "../model/file-input";
 
 type MapValue = string | number | boolean | object | undefined;
 type MapNode = Map<string, MapValue> | undefined;
@@ -14,7 +13,25 @@ type AcceptorConfigKey = "accepted-as" | "group-root-directory" | "accepted-mime
 type AcceptorConfigNode = { [Key in AcceptorConfigKey]: string | string[] };
 type LoggingConfigKey = "enable-json-logging" | "min-level";
 type ActuatorConfigKey = "appName" | "abbreviation";
-type ConfigKey = ServerConfigKey | DatasourceConfigKey | StorageConfigKey | AcceptorConfigKey | AuthConfigKey | LoggingConfigKey | ActuatorConfigKey;
+type ConfigKey =
+    ServerConfigKey
+    | DatasourceConfigKey
+    | StorageConfigKey
+    | AcceptorConfigKey
+    | AuthConfigKey
+    | LoggingConfigKey
+    | ActuatorConfigKey;
+
+/**
+ * Enum to map the supported logging level configuration values to their corresponding ts-log log level values.
+ */
+export enum LogLevel {
+
+    debug = 2,
+    info = 3,
+    warn = 4,
+    error = 5
+}
 
 /**
  * Application configuration parameters root.
@@ -136,11 +153,11 @@ export class AuthConfig {
  */
 export class LoggingConfig {
 
-    readonly minLevel: TLogLevelName;
+    readonly minLevel: LogLevel;
     readonly enableJsonLogging: boolean;
 
     constructor(parameters: MapNode) {
-        this.minLevel = getValue(parameters, "min-level", "info");
+        this.minLevel = LogLevel[getValue(parameters, "min-level", "info") as keyof typeof LogLevel];
         this.enableJsonLogging = getValue(parameters, "enable-json-logging", false);
     }
 }

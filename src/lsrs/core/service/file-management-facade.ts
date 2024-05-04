@@ -1,4 +1,3 @@
-import { Logger } from "tslog";
 import { Service } from "typedi";
 import { InMemoryCache } from "../../helper/cache";
 import { Optional } from "../../helper/common-utilities";
@@ -22,7 +21,7 @@ export default class FileManagementFacade {
 
     private static readonly metadataCache = "metadata";
 
-    private readonly logger: Logger = LoggerFactory.getLogger(FileManagementFacade);
+    private readonly logger = LoggerFactory.getLogger(FileManagementFacade);
 
     private readonly fileMetadataService: FileMetadataService;
     private readonly fileManagementService: FileManagementService;

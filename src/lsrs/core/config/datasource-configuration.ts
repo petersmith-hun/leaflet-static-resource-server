@@ -1,12 +1,11 @@
-import {Sequelize} from "sequelize";
-import {Logger} from "tslog";
-import {Inject, Service} from "typedi";
-import {Configuration} from "../../helper/common-utilities";
+import { Sequelize } from "sequelize";
+import { Inject, Service } from "typedi";
+import { Configuration } from "../../helper/common-utilities";
 import LoggerFactory from "../../helper/logger-factory";
-import {ConfigurationToken} from "../../helper/typedi-tokens";
-import {GenericError} from "../error/error-types";
-import {UploadedFile, uploadedFileModelAttributes} from "../model/uploaded-file";
-import ConfigurationProvider, {DatasourceConfig} from "./configuration-provider";
+import { ConfigurationToken } from "../../helper/typedi-tokens";
+import { GenericError } from "../error/error-types";
+import { UploadedFile, uploadedFileModelAttributes } from "../model/uploaded-file";
+import ConfigurationProvider, { DatasourceConfig } from "./configuration-provider";
 
 /**
  * Datasource configuration triggered by TypeDI. After configuring the connection, the implementation verifies that the
@@ -16,7 +15,7 @@ import ConfigurationProvider, {DatasourceConfig} from "./configuration-provider"
 @Service({multiple: true, id: ConfigurationToken})
 export default class DatasourceConfiguration implements Configuration {
 
-    private readonly logger: Logger = LoggerFactory.getLogger(DatasourceConfiguration);
+    private readonly logger = LoggerFactory.getLogger(DatasourceConfiguration);
     private readonly datasourceConfig: DatasourceConfig;
     private sequelize!: Sequelize;
 

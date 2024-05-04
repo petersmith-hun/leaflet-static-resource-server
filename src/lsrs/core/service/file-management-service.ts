@@ -1,13 +1,12 @@
 import * as fs from "fs";
 import path from "path";
-import {Logger} from "tslog";
-import {Service} from "typedi";
+import { Service } from "typedi";
 import LoggerFactory from "../../helper/logger-factory";
-import ConfigurationProvider, {Acceptor} from "../config/configuration-provider";
-import {InaccessibleFileError, InvalidFileInputError} from "../error/error-types";
-import {AcceptorInfo} from "../model/file-browser-api";
-import {FileInput} from "../model/file-input";
-import {UploadedFileCreateAttributes} from "../model/uploaded-file";
+import ConfigurationProvider, { Acceptor } from "../config/configuration-provider";
+import { InaccessibleFileError, InvalidFileInputError } from "../error/error-types";
+import { AcceptorInfo } from "../model/file-browser-api";
+import { FileInput } from "../model/file-input";
+import { UploadedFileCreateAttributes } from "../model/uploaded-file";
 import FileUploader from "./upload/file-uploader";
 import PathUtility from "./upload/path-utility";
 
@@ -18,7 +17,7 @@ import PathUtility from "./upload/path-utility";
 @Service()
 export default class FileManagementService {
 
-    private readonly logger: Logger = LoggerFactory.getLogger(FileManagementService);
+    private readonly logger = LoggerFactory.getLogger(FileManagementService);
 
     private readonly fileUploader: FileUploader;
     private readonly pathUtility: PathUtility;

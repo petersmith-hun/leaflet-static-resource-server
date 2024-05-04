@@ -1,8 +1,8 @@
-import {NextFunction, Request, Response} from "express";
-import formidable, {File, Part} from "formidable";
+import { NextFunction, Request, Response } from "express";
+import formidable, { Part } from "formidable";
 import IncomingForm from "formidable/Formidable";
-import {Writable} from "stream";
-import {HttpStatus} from "../model/common";
+import { Writable } from "stream";
+import { HttpStatus } from "../model/common";
 
 /**
  * File upload handler middleware for Express using Formidable form parser.
@@ -96,7 +96,7 @@ function handleErrorResponse(response: Response, error: any) {
 
 function populateRequestBody(fields: formidable.Fields, files: formidable.Files, request: Request, fileUploadWritable: FileUploadWritable) {
 
-    const inputFile: File = files.inputFile as File;
+    const inputFile = files.inputFile?.pop();
 
     if (inputFile) {
         request.body.inputFile = {
@@ -106,6 +106,6 @@ function populateRequestBody(fields: formidable.Fields, files: formidable.Files,
             content: fileUploadWritable.getBuffer()
         };
     }
-    request.body.subFolder = fields.subFolder as string;
-    request.body.description = fields.description as string;
+    request.body.subFolder = fields.subFolder?.pop();
+    request.body.description = fields.description?.pop();
 }

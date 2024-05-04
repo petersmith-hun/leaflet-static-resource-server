@@ -1,5 +1,7 @@
 version: 2.1
 
+# TODO update circleci config as well
+
 orbs:
   jira: circleci/jira@1.1.2
   node: circleci/node@5.0.3

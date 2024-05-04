@@ -1,5 +1,4 @@
-import {Logger} from "tslog";
-import {Service} from "typedi";
+import { Service } from "typedi";
 import LoggerFactory from "./logger-factory";
 
 /**
@@ -11,7 +10,7 @@ import LoggerFactory from "./logger-factory";
 export class InMemoryCache {
 
     private readonly contents: Map<string, Map<any, any>> = new Map();
-    private readonly logger: Logger = LoggerFactory.getLogger(InMemoryCache);
+    private readonly logger = LoggerFactory.getLogger(InMemoryCache);
 
     /**
      * Returns a stored value from the specified cache by its key. Also, able to calculate and immediately store (and

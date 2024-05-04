@@ -1,5 +1,6 @@
 import * as fs from "fs";
-import {Logger} from "tslog";
+import { ILogObj, Logger } from "tslog";
+import { LogLevel } from "../../src/lsrs/core/config/configuration-provider";
 import {uploadPath} from "./init";
 import {TestData} from "./test-constants";
 
@@ -9,11 +10,10 @@ import {TestData} from "./test-constants";
 export default class ApplicationManager {
 
     private static readonly startUpTimeout = 5000;
-    private static readonly logger: Logger = new Logger({
+    private static readonly logger = new Logger<ILogObj>({
         name: "Cucumber | ApplicationManager",
-        minLevel: "debug",
-        displayFunctionName: false,
-        displayFilePath: "hidden"
+        minLevel: LogLevel.debug,
+        hideLogPositionForProduction: true
     });
 
     private static started: boolean = false;

@@ -38,6 +38,7 @@ commands:
         default: "rc"
         enum: ["rc", "release"]
     steps:
+      - checkout
       - attach_workspace:
           at: << pipeline.parameters.workspace_dir >>
       - gh/setup
@@ -218,7 +219,6 @@ workflows:
                 - master
           post-steps:
             - jira/notify:
-                debug: true
                 pipeline_id: << pipeline.id >>
                 pipeline_number: << pipeline.number >>
 

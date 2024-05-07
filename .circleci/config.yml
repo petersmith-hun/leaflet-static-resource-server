@@ -47,7 +47,7 @@ commands:
           command: |
             [[ "<< parameters.release-type >>" = "release" ]] && VERSION_QUALIFIER=".release" || VERSION_QUALIFIER=""
             VERSION=v$(cat << pipeline.parameters.workspace_dir >>/<< pipeline.parameters.version_file >>)$VERSION_QUALIFIER
-            gh release create ${VERSION} --target ${CIRCLE_SHA1} << pipeline.parameters.workspace_dir >>/<< pipeline.parameters.distribution_archive >>
+            gh release create ${VERSION} --target ${CIRCLE_SHA1} --title ${VERSION} << pipeline.parameters.workspace_dir >>/<< pipeline.parameters.distribution_archive >>
 
 jobs:
 

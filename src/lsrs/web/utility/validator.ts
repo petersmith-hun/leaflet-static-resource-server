@@ -1,6 +1,6 @@
-import {validateSync, ValidationError} from "class-validator";
-import {InvalidRequestError} from "../error/api-error-types";
-import {ConstraintViolation} from "../model/common";
+import { InvalidRequestError } from "@app/web/error/api-error-types";
+import { ConstraintViolation } from "@app/web/model/common";
+import { validateSync, ValidationError } from "class-validator";
 
 /**
  * Attaches a validator logic to the marked methods. Upon calling the marked method, each of the method parameters

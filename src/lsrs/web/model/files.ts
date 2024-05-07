@@ -1,6 +1,6 @@
-import {IsNotEmpty, IsUUID, MaxLength} from "class-validator";
-import {Request} from "express";
-import {Optional} from "../../helper/common-utilities";
+import { Optional } from "@app/helper/common-utilities";
+import { IsNotEmpty, IsUUID, MaxLength } from "class-validator";
+import { Request } from "express";
 
 /**
  * API response model for file data.

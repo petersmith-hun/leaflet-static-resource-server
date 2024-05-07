@@ -1,28 +1,25 @@
-import { Logger } from "tslog";
-import { Service } from "typedi";
-import { InMemoryCache } from "../../helper/cache";
-import { Optional } from "../../helper/common-utilities";
-import LoggerFactory from "../../helper/logger-factory";
-import { AcceptorInfo, DownloadableFileWrapper, VFSContent, VFSPath } from "../model/file-browser-api";
-import { FileInput } from "../model/file-input";
+import { AcceptorInfo, DownloadableFileWrapper, VFSContent, VFSPath } from "@app/core/model/file-browser-api";
+import { FileInput } from "@app/core/model/file-input";
 import {
     UploadedFileCreateAttributes,
     UploadedFileDescriptor,
     UploadedFileUpdateAttributes
-} from "../model/uploaded-file";
-import VFSBrowser from "./browser/vfs-browser";
-import FileManagementService from "./file-management-service";
-import FileMetadataService from "./file-metadata-service";
+} from "@app/core/model/uploaded-file";
+import VFSBrowser, { vfsBrowser } from "@app/core/service/browser/vfs-browser";
+import FileManagementService, { fileManagementService } from "@app/core/service/file-management-service";
+import FileMetadataService, { fileMetadataService } from "@app/core/service/file-metadata-service";
+import { inMemoryCache, InMemoryCache } from "@app/helper/cache";
+import { Optional } from "@app/helper/common-utilities";
+import LoggerFactory from "@app/helper/logger-factory";
 
 /**
  * Facade for file management operations, including info storage.
  */
-@Service()
 export default class FileManagementFacade {
 
     private static readonly metadataCache = "metadata";
 
-    private readonly logger: Logger = LoggerFactory.getLogger(FileManagementFacade);
+    private readonly logger = LoggerFactory.getLogger(FileManagementFacade);
 
     private readonly fileMetadataService: FileMetadataService;
     private readonly fileManagementService: FileManagementService;
@@ -165,3 +162,5 @@ export default class FileManagementFacade {
         return this.vfsBrowser.browseVFS(vfsPath);
     }
 }
+
+export const fileManagementFacade = new FileManagementFacade(fileMetadataService, fileManagementService, inMemoryCache, vfsBrowser);

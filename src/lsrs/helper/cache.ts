@@ -1,17 +1,14 @@
-import {Logger} from "tslog";
-import {Service} from "typedi";
-import LoggerFactory from "./logger-factory";
+import LoggerFactory from "@app/helper/logger-factory";
 
 /**
  * In-memory caching component.
  * Uses a 2-level map, where the first level is the cache group (its name being the key) and the second level is
  * storing arbitrary key-value pairs. Caches are automatically created upon first usage.
  */
-@Service()
 export class InMemoryCache {
 
     private readonly contents: Map<string, Map<any, any>> = new Map();
-    private readonly logger: Logger = LoggerFactory.getLogger(InMemoryCache);
+    private readonly logger = LoggerFactory.getLogger(InMemoryCache);
 
     /**
      * Returns a stored value from the specified cache by its key. Also, able to calculate and immediately store (and
@@ -77,3 +74,5 @@ export class InMemoryCache {
         }
     }
 }
+
+export const inMemoryCache = new InMemoryCache();

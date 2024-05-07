@@ -1,22 +1,19 @@
+import ConfigurationProvider, { Acceptor, configurationProvider } from "@app/core/config/configuration-provider";
+import { GenericError } from "@app/core/error/error-types";
+import { FileInput } from "@app/core/model/file-input";
+import { UploadedFileCreateAttributes } from "@app/core/model/uploaded-file";
+import PathUtility, { pathUtility } from "@app/core/service/upload/path-utility";
+import { Optional } from "@app/helper/common-utilities";
+import LoggerFactory from "@app/helper/logger-factory";
 import * as fs from "fs";
-import {Logger} from "tslog";
-import {Service} from "typedi";
-import {v4 as UUID} from "uuid";
-import {Optional} from "../../../helper/common-utilities";
-import LoggerFactory from "../../../helper/logger-factory";
-import ConfigurationProvider, {Acceptor} from "../../config/configuration-provider";
-import {GenericError} from "../../error/error-types";
-import {FileInput} from "../../model/file-input";
-import {UploadedFileCreateAttributes} from "../../model/uploaded-file";
-import PathUtility from "./path-utility";
+import { v4 as UUID } from "uuid";
 
 /**
  * File upload logic.
  */
-@Service()
 export default class FileUploader {
 
-    private readonly logger: Logger = LoggerFactory.getLogger(FileUploader);
+    private readonly logger = LoggerFactory.getLogger(FileUploader);
 
     private readonly acceptors: Acceptor[];
     private readonly pathUtility: PathUtility;
@@ -73,3 +70,5 @@ export default class FileUploader {
         }
     }
 }
+
+export const fileUploader = new FileUploader(configurationProvider, pathUtility);

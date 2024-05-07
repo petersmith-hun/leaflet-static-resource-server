@@ -1,5 +1,5 @@
-import {AxiosResponse} from "axios";
-import {Attribute} from "./test-constants";
+import { Attribute } from "@acceptance/support/test-constants";
+import { AxiosResponse } from "axios";
 
 /**
  * Component to store intermediate data during Cucumber test execution.

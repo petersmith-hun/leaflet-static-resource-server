@@ -1,24 +1,24 @@
+import ConfigurationProvider, {
+    Acceptor,
+    configurationProvider,
+    StorageConfig
+} from "@app/core/config/configuration-provider";
+import { GenericError } from "@app/core/error/error-types";
+import { Configuration } from "@app/helper/common-utilities";
+import LoggerFactory from "@app/helper/logger-factory";
 import * as fs from "fs";
 import path from "path";
-import {Logger} from "tslog";
-import {Inject, Service} from "typedi";
-import {Configuration} from "../../helper/common-utilities";
-import LoggerFactory from "../../helper/logger-factory";
-import {ConfigurationToken} from "../../helper/typedi-tokens";
-import {GenericError} from "../error/error-types";
-import ConfigurationProvider, {Acceptor, StorageConfig} from "./configuration-provider";
 
 /**
  * Configuration for creating the file storage of LSRS.
  * Creates the storage root and acceptor root folders and sets the permission for them.
  */
-@Service({multiple: true, id: ConfigurationToken})
 export default class FileStorageConfiguration implements Configuration {
 
-    private readonly logger: Logger = LoggerFactory.getLogger(FileStorageConfiguration);
+    private readonly logger = LoggerFactory.getLogger(FileStorageConfiguration);
     private readonly storageConfig: StorageConfig;
 
-    constructor(@Inject() configurationProvider: ConfigurationProvider) {
+    constructor(configurationProvider: ConfigurationProvider) {
         this.storageConfig = configurationProvider.getStorageConfig();
     }
 
@@ -45,7 +45,7 @@ export default class FileStorageConfiguration implements Configuration {
         if (!fs.existsSync(uploadPath)) {
             this.logger.warn(`Directory ${description} does not exist. Trying to create...`);
             try {
-                fs.mkdirSync(uploadPath, {mode: permission});
+                fs.mkdirSync(uploadPath, { mode: permission });
                 this.logger.info(`Directory ${description} created at ${uploadPath}`);
             } catch (error) {
                 this.logger.error(`Failed to create ${description}: ${error}`);
@@ -73,3 +73,5 @@ export default class FileStorageConfiguration implements Configuration {
         });
     }
 }
+
+export const fileStorageConfiguration = new FileStorageConfiguration(configurationProvider);

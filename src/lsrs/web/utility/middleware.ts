@@ -1,18 +1,17 @@
-import {NextFunction, Request, Response} from "express";
-import {InsufficientScopeError, InvalidTokenError, UnauthorizedError} from "express-oauth2-jwt-bearer";
-import {Logger} from "tslog";
-import {v4 as UUID} from "uuid";
 import {
     ConflictingResourceError,
     InaccessibleFileError,
     InvalidFileInputError,
     ResourceNotFoundError
-} from "../../core/error/error-types";
-import LoggerFactory from "../../helper/logger-factory";
-import {InvalidRequestError} from "../error/api-error-types";
-import {ConstraintViolationErrorMessage, ErrorMessage, HttpStatus} from "../model/common";
+} from "@app/core/error/error-types";
+import LoggerFactory from "@app/helper/logger-factory";
+import { InvalidRequestError } from "@app/web/error/api-error-types";
+import { ConstraintViolationErrorMessage, ErrorMessage, HttpStatus } from "@app/web/model/common";
+import { NextFunction, Request, Response } from "express";
+import { InsufficientScopeError, InvalidTokenError, UnauthorizedError } from "express-oauth2-jwt-bearer";
+import { v4 as UUID } from "uuid";
 
-const logger: Logger = LoggerFactory.getLogger("ErrorHandlerMiddleware");
+const logger = LoggerFactory.getLogger("ErrorHandlerMiddleware");
 
 /**
  * Error type to HTTP status mapping.
@@ -33,11 +32,11 @@ const errorStatusMap = new Map<string, HttpStatus>([
  * Generates and sends an error response model, along with setting the response status based on the received error type.
  *
  * @param error thrown error object
- * @param request Express Request object
+ * @param _request Express Request object (unused)
  * @param response Express Response object
- * @param next Express next function
+ * @param _next Express next function (unused)
  */
-export const errorHandlerMiddleware = (error: Error, request: Request, response: Response, next: NextFunction) => {
+export const errorHandlerMiddleware = (error: Error, _request: Request, response: Response, _next: NextFunction) => {
 
     const errorType = error.constructor.name;
     const errorMessage: ErrorMessage | ConstraintViolationErrorMessage = errorType == InvalidRequestError.name

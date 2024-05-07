@@ -1,8 +1,8 @@
-import {BeforeAll, Then, When} from "@cucumber/cucumber";
-import {expect} from "expect";
-import {HealthResponse, InfoResponse} from "../../src/lsrs/web/model/actuator";
-import DataRegistry from "../support/data-registry";
-import LSRSRestClient from "../support/lsrs-rest-client";
+import DataRegistry from "@acceptance/support/data-registry";
+import LSRSRestClient from "@acceptance/support/lsrs-rest-client";
+import { HealthResponse, InfoResponse } from "@app/web/model/actuator";
+import { BeforeAll, Then, When } from "@cucumber/cucumber";
+import { expect } from "expect";
 
 let restClient: LSRSRestClient;
 

@@ -1,6 +1,6 @@
-import {OAuth2Server} from "oauth2-mock-server";
-import ConfigurationProvider, {AuthConfig} from "../../src/lsrs/core/config/configuration-provider";
-import {Scope} from "../../src/lsrs/web/model/common";
+import ConfigurationProvider, { AuthConfig } from "@app/core/config/configuration-provider";
+import { Scope } from "@app/web/model/common";
+import { OAuth2Server } from "oauth2-mock-server";
 
 /**
  * Utility component for handling OAuth authorization mocking during Cucumber test execution.

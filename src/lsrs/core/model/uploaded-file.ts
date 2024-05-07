@@ -1,5 +1,5 @@
-import {DataTypes, Model, ModelAttributes, Optional as SequelizeOptional} from "sequelize";
-import {Optional} from "../../helper/common-utilities";
+import { Optional } from "@app/helper/common-utilities";
+import { DataTypes, Model, ModelAttributes, Optional as SequelizeOptional } from "sequelize";
 
 /**
  * Model for updating an existing file metadata record.

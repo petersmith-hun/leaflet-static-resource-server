@@ -1,18 +1,17 @@
+import ConfigurationProvider, { LogLevel } from "@app/core/config/configuration-provider";
 import * as fs from "fs";
-import {Sequelize} from "sequelize";
-import {Logger} from "tslog";
-import ConfigurationProvider from "../../src/lsrs/core/config/configuration-provider";
+import { Sequelize } from "sequelize";
+import { ILogObj, Logger } from "tslog";
 
 /**
  * Utilities for handling the mocked database during Cucumber test execution.
  */
 export default class DatasourceManager {
 
-    private static readonly logger: Logger = new Logger({
+    private static readonly logger = new Logger<ILogObj>({
         name: "Cucumber | DatabaseManager",
-        minLevel: "debug",
-        displayFunctionName: false,
-        displayFilePath: "hidden"
+        minLevel: LogLevel.debug,
+        hideLogPositionForProduction: true
     });
 
     private static readonly scripts = new Map<string, string>();

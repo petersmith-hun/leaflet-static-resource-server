@@ -1,26 +1,25 @@
-import {Sequelize} from "sequelize";
-import {Logger} from "tslog";
-import {Inject, Service} from "typedi";
-import {Configuration} from "../../helper/common-utilities";
-import LoggerFactory from "../../helper/logger-factory";
-import {ConfigurationToken} from "../../helper/typedi-tokens";
-import {GenericError} from "../error/error-types";
-import {UploadedFile, uploadedFileModelAttributes} from "../model/uploaded-file";
-import ConfigurationProvider, {DatasourceConfig} from "./configuration-provider";
+import ConfigurationProvider, {
+    configurationProvider,
+    DatasourceConfig
+} from "@app/core/config/configuration-provider";
+import { GenericError } from "@app/core/error/error-types";
+import { UploadedFile, uploadedFileModelAttributes } from "@app/core/model/uploaded-file";
+import { Configuration } from "@app/helper/common-utilities";
+import LoggerFactory from "@app/helper/logger-factory";
+import { Sequelize } from "sequelize";
 
 /**
  * Datasource configuration triggered by TypeDI. After configuring the connection, the implementation verifies that the
  * specified database is accessible, and also registers the models. Detecting the database to be inaccessible triggers
  * shutting down the application.
  */
-@Service({multiple: true, id: ConfigurationToken})
 export default class DatasourceConfiguration implements Configuration {
 
-    private readonly logger: Logger = LoggerFactory.getLogger(DatasourceConfiguration);
+    private readonly logger = LoggerFactory.getLogger(DatasourceConfiguration);
     private readonly datasourceConfig: DatasourceConfig;
     private sequelize!: Sequelize;
 
-    constructor(@Inject() configurationProvider: ConfigurationProvider) {
+    constructor(configurationProvider: ConfigurationProvider) {
         this.datasourceConfig = configurationProvider.getDatasourceConfig();
     }
 
@@ -55,3 +54,5 @@ export default class DatasourceConfiguration implements Configuration {
             updatedAt: false});
     }
 }
+
+export const datasourceConfiguration = new DatasourceConfiguration(configurationProvider);

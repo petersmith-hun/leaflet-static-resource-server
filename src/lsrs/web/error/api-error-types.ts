@@ -1,5 +1,5 @@
-import {GenericError} from "../../core/error/error-types";
-import {ConstraintViolation} from "../model/common";
+import { GenericError } from "@app/core/error/error-types";
+import { ConstraintViolation } from "@app/web/model/common";
 
 /**
  * Error to be thrown when API-level request validation fails.

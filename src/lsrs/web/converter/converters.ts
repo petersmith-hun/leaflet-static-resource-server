@@ -1,7 +1,12 @@
-import { VFSContent } from "../../core/model/file-browser-api";
-import {FileInput, MIMEType} from "../../core/model/file-input";
-import {UploadedFileCreateAttributes, UploadedFileUpdateAttributes} from "../../core/model/uploaded-file";
-import { FileModel, FileUploadRequestModel, UpdateFileMetadataRequestModel, VFSBrowserModel } from "../model/files";
+import { VFSContent } from "@app/core/model/file-browser-api";
+import { FileInput, MIMEType } from "@app/core/model/file-input";
+import { UploadedFileCreateAttributes, UploadedFileUpdateAttributes } from "@app/core/model/uploaded-file";
+import {
+    FileModel,
+    FileUploadRequestModel,
+    UpdateFileMetadataRequestModel,
+    VFSBrowserModel
+} from "@app/web/model/files";
 
 /**
  * Converts an UploadedFileCreateAttributes object to FileModel.

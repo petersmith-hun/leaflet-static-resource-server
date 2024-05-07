@@ -1,29 +1,9 @@
-import "reflect-metadata";
-import express, {Express} from "express";
-import {Container} from "typedi";
-import {buildTime} from "../build-time.json";
-import {version} from "../package.json";
-import DatasourceConfiguration from "./lsrs/core/config/datasource-configuration";
-import FileStorageConfiguration from "./lsrs/core/config/file-storage-configuration";
-import {Configuration} from "./lsrs/helper/common-utilities";
-import LoggerFactory from "./lsrs/helper/logger-factory";
-import {BuildTimeToken, ConfigurationToken, ExpressToken, VersionToken} from "./lsrs/helper/typedi-tokens";
-import LeafletStaticResourceServerApplication from "./lsrs/leaflet-static-resource-server-application";
-import ActuatorController from "./lsrs/web/controller/actuator-controller";
-import FilesController from "./lsrs/web/controller/files-controller";
+import { datasourceConfiguration } from "@app/core/config/datasource-configuration";
+import { fileStorageConfiguration } from "@app/core/config/file-storage-configuration";
+import LoggerFactory from "@app/helper/logger-factory";
+import { leafletStaticResourceServerApplication } from "@app/leaflet-static-resource-server-application";
 
-Container.set<Express>(ExpressToken, express());
-Container.set<string>(VersionToken, version);
-Container.set<string>(BuildTimeToken, buildTime);
-
-Container.import([
-    ActuatorController,
-    FilesController,
-    DatasourceConfiguration,
-    FileStorageConfiguration
-]);
-
-Container.getMany<Configuration>(ConfigurationToken)
+[datasourceConfiguration, fileStorageConfiguration]
     .forEach(async configuration => {
         try {
             await configuration.init();
@@ -34,6 +14,4 @@ Container.getMany<Configuration>(ConfigurationToken)
         }
     });
 
-Container
-    .get(LeafletStaticResourceServerApplication)
-    .run(version);
+leafletStaticResourceServerApplication.run();

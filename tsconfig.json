@@ -11,7 +11,36 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "removeComments": true
+    "removeComments": true,
+    "baseUrl": "./",
+    "paths": {
+      "@app/*": [
+        "src/lsrs/*"
+      ],
+      "@package": [
+        "package.json"
+      ],
+      "@build-time": [
+        "build-time.json"
+      ],
+      "@acceptance/*": [
+        "acceptance/*"
+      ],
+      "@testdata/dao": [
+        "tests/lsrs/core/dao/uploaded-file-dao.testdata"
+      ],
+      "@testdata/service": [
+        "tests/lsrs/core/service/service.testdata"
+      ],
+      "@testdata/web": [
+        "tests/lsrs/web/web.testdata"
+      ]
+    }
+  },
+  "ts-node": {
+    "require": [
+      "tsconfig-paths/register"
+    ]
   },
   "exclude": [
     "./test",

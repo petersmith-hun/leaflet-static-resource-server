@@ -1,4 +1,4 @@
-import { UploadedFileDescriptor } from "./uploaded-file";
+import { UploadedFileDescriptor } from "@app/core/model/uploaded-file";
 
 /**
  * Descriptor model for acceptors to be used on the external API.

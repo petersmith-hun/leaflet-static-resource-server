@@ -59,7 +59,7 @@ jobs:
         default: "rc"
         enum: ["rc", "release"]
     docker:
-      - image: cimg/node:20.12.2
+      - image: cimg/node:20.13.0
     steps:
       - checkout
       - run:

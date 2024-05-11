@@ -8,7 +8,7 @@
     "livereload": "ts-node-dev --respawn --pretty --transpile-only ./src/lsrs-main.ts",
     "test": "jest",
     "acceptance": "npx cucumber-js",
-    "build": "tsc -p . && ts-node .circleci/generate-build-time.ts",
+    "build": "tsc -p . && tsc-alias -p tsconfig.json && ts-node .circleci/generate-build-time.ts",
     "package": "npx pkg --targets=linux --output=./build/lsrs ."
   },
   "pkg": {

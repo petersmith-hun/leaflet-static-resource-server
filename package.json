@@ -45,7 +45,7 @@
     "memfs": "4.17.1",
     "oauth2-mock-server": "7.2.1",
     "sinon": "20.0.0",
-    "sqlite3": "5.1.7",
+    "sqlite3": "5.1.6",
     "tsconfig-paths": "4.2.0",
     "tsc-alias": "1.8.16",
     "ts-jest": "29.3.2",

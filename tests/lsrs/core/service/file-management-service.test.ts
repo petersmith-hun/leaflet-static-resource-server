@@ -35,9 +35,8 @@ describe("Unit tests for FileManagementService", () => {
                 }
             }
         });
-        vol.writeFileSync("/tmp/storage/images/test_inaccessible.jpg", "", {
-            mode: 0o100
-        });
+        vol.writeFileSync("/tmp/storage/images/test_inaccessible.jpg", "");
+        vol.chmodSync("/tmp/storage/images/test_inaccessible.jpg", 0o100);
 
         initFSMocks(["readFile"]);
 

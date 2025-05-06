@@ -1,0 +1,40 @@
+domino:
+  deployments:
+    lsrs:
+      source:
+        type: DOCKER
+        home: "[dsm:common.home.docker]"
+        resource: lsrs
+      target:
+        hosts:
+          - psproghu
+      execution:
+        command-name: app_lsrs
+        via: STANDARD
+        args:
+          ports:
+            8083: 8083
+          network-mode: host
+          environment:
+            NODE_OPTIONS: --max_old_space_size=128
+            NODE_ENV: lsrs_production
+            NODE_CONFIG_DIR: /opt/lsrs
+          volumes:
+            "[dsm:volume.logs]": "/opt/lsrs/logs:rw"
+            "[dsm:volume.config.lsrs]": "/opt/lsrs/lsrs_production.yml:ro"
+            "[dsm:volume.vfs]": "/opt/lsrs/storage:rw"
+            "/etc/timezone": "/etc/timezone:ro"
+            "/etc/localtime": "/etc/localtime:ro"
+          restart-policy: unless-stopped
+      health-check:
+        enabled: true
+        delay: 20 seconds
+        timeout: 2 seconds
+        max-attempts: 3
+        endpoint: "http://127.0.0.1:8083/lsrs/actuator/health"
+      info:
+        enabled: true
+        endpoint: "http://127.0.0.1:8083/lsrs/actuator/info"
+        field-mapping:
+          abbreviation: $.app.abbreviation
+          version: $.build.version

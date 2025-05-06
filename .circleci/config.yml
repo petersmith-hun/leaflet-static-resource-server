@@ -1,10 +1,8 @@
 version: 2.1
 
 orbs:
-  jira: circleci/jira@2.1.0
-  node: circleci/node@5.2.0
-  jq: circleci/jq@3.0.0
-  gh: circleci/github-cli@2.3.0
+  jira: circleci/jira@2.2.0
+  gh: circleci/github-cli@2.7.0
 
 # Common parameters for CircleCI build config
 parameters:
@@ -49,6 +47,17 @@ commands:
             VERSION=v$(cat << pipeline.parameters.workspace_dir >>/<< pipeline.parameters.version_file >>)$VERSION_QUALIFIER
             gh release create ${VERSION} --target ${CIRCLE_SHA1} --title ${VERSION} << pipeline.parameters.workspace_dir >>/<< pipeline.parameters.distribution_archive >>
 
+executors:
+  node:
+    docker:
+      - image: cimg/node:22.15
+  python:
+    docker:
+      - image: cimg/python:3.12
+  base:
+    docker:
+      - image: cimg/base:stable
+
 jobs:
 
   # Leaflet Static Resource Server - Build and test application
@@ -58,8 +67,7 @@ jobs:
         type: enum
         default: "rc"
         enum: ["rc", "release"]
-    docker:
-      - image: cimg/node:20.13.0
+    executor: node
     steps:
       - checkout
       - run:
@@ -87,9 +95,9 @@ jobs:
           command: |
             npm config set git-tag-version false
             npm version $VERSION
-      - node/install-packages:
-          override-ci-command: npm install
-          with-cache: false
+      - run:
+          name: Install dependencies
+          command: npm install
       - run:
           name: Execute LSRS unit tests
           command: |
@@ -134,73 +142,46 @@ jobs:
 
   # Leaflet Static Resource Server - Deploy to production
   deploy:
-    docker:
-      - image: cimg/openjdk:11.0
+    executor: python
     steps:
+      - checkout
       - attach_workspace:
           at: << pipeline.parameters.workspace_dir >>
       - run:
           command: echo 'export PROJECT_VERSION="$(cat << pipeline.parameters.workspace_dir >>/<< pipeline.parameters.version_file >>)"' >> $BASH_ENV
           name: Set project version
-      - jq/install
+      - run:
+          command: pip install domino-cli
+          name: Install Domino CLI
       - run:
           command: |
-            set +e
-
-            oauth_token_response=${LEAFLET_CI_DOMINO_AUTH_TOKEN}
-            if ! [[ $oauth_token_response ]]
-            then
-                oauth_token_response=$(curl \
-                    --silent \
-                    --request POST "${LEAFLET_CI_DOMINO_OAUTH_TOKEN_ENDPOINT}" \
-                    --header "Authorization: Basic ${LEAFLET_CI_DOMINO_OAUTH_CLIENT_AUTH}" \
-                    --form "client_id=${LEAFLET_CI_DOMINO_OAUTH_CLIENT_ID}" \
-                    --form "scope=${LEAFLET_CI_DOMINO_OAUTH_SCOPE}" \
-                    --form "audience=${LEAFLET_CI_DOMINO_OAUTH_AUDIENCE}" \
-                    --form "grant_type=${LEAFLET_CI_DOMINO_OAUTH_GRANT_TYPE}" | jq -r '.access_token')
+            set -e
             
-                if [[ $oauth_token_response == "null" ]]
-                then
-                  echo "Authorization failed" && exit 1
-                fi
-            fi
+            echo "Requesting access token ..."
+            token="$(domino-cli --cicd auth --generate-token)" || exit 1
+            export DOMINO_CLI_PREAUTHORIZED_TOKEN=$token
+            
+            domino-cli --cicd import
+            echo "Deployment definition successfully imported"
+            
+            domino-cli --cicd deploy << pipeline.parameters.app_name >> ${PROJECT_VERSION}
+            echo "Successfully deployed application << pipeline.parameters.app_name >> v${PROJECT_VERSION}"
+            
+            domino-cli --cicd start << pipeline.parameters.app_name >>
+            echo "Successfully started application << pipeline.parameters.app_name >>"
 
-            domino_deploy_response=$(curl \
-                 --silent --write-out "%{http_code}" --output /dev/null \
-                 --request PUT \
-                 --header "Authorization: Bearer $oauth_token_response" \
-                 "${LEAFLET_CI_DOMINO_HOST}/lifecycle/<< pipeline.parameters.app_name >>/deploy/${PROJECT_VERSION}")
-
-            case $domino_deploy_response in
-              201 | 202) echo "Domino deployment request was successful, deployment may continue" ;;
-              *) echo "Domino deployment request returned with status_code=$domino_deploy_response" && exit 1 ;;
-            esac
-
-            domino_start_response=$(curl \
-                 --silent --write-out "%{http_code}" --output /dev/null \
-                 --request PUT \
-                 --header "Authorization: Bearer $oauth_token_response" \
-                 "${LEAFLET_CI_DOMINO_HOST}/lifecycle/<< pipeline.parameters.app_name >>/start")
-
-            case $domino_start_response in
-              201 | 202) exit 0 ;;
-              *) echo "Domino application start request returned with status_code=$domino_start_response" && exit 1 ;;
-            esac
-
-          name: Instruct Domino to start deployment and spin up the application
+          name: Deploy via Domino
 
   # Leaflet Static Resource Server - Publish tag (and release) on GitHub for RC versions
   publish-github-rc:
-    docker:
-      - image: cimg/base:stable
+    executor: base
     steps:
       - github_release:
           release-type: rc
 
   # Leaflet Static Resource Server - Publish tag (and release) on GitHub for RELEASE versions
   publish-github-release:
-    docker:
-      - image: cimg/base:stable
+    executor: base
     steps:
       - github_release:
           release-type: release
@@ -212,7 +193,9 @@ workflows:
 
       - build:
           release-type: rc
-          context: leaflet_ci
+          context:
+            - common-tech
+            - docker-registry
           filters:
             branches:
               only:
@@ -223,7 +206,8 @@ workflows:
                 pipeline_number: << pipeline.number >>
 
       - publish-github-rc:
-          context: leaflet_ci
+          context:
+            - common-tech
           requires:
             - build
 
@@ -232,7 +216,9 @@ workflows:
 
       - build:
           release-type: release
-          context: leaflet_ci
+          context:
+            - common-tech
+            - docker-registry
           filters:
             branches:
               only:
@@ -243,13 +229,14 @@ workflows:
                 pipeline_number: << pipeline.number >>
 
       - deploy-approval:
-          context: leaflet_ci
           type: approval
           requires:
             - build
 
       - deploy:
-          context: leaflet_ci
+          context:
+            - common-tech
+            - domino
           requires:
             - deploy-approval
           post-steps:
@@ -261,7 +248,8 @@ workflows:
                 pipeline_number: << pipeline.number >>
 
       - publish-github-release:
-          context: leaflet_ci
+          context:
+            - common-tech
           requires:
             - deploy
 

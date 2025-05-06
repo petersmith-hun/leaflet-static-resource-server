@@ -15,7 +15,7 @@
     "scripts": "./dist/**/*.js"
   },
   "dependencies": {
-    "class-validator": "0.14.2",
+    "class-validator": "0.14.1",
     "config": "3.3.12",
     "cors": "2.8.5",
     "express": "4.21.2",
@@ -27,7 +27,7 @@
     "remove-accents": "0.5.0",
     "sequelize": "6.37.7",
     "tslog": "4.9.3",
-    "uuid": "11.1.0"
+    "uuid": "9.0.1"
   },
   "devDependencies": {
     "@cucumber/cucumber": "10.9.0",

@@ -62,7 +62,7 @@ Feature: Test scenarios for file handling endpoints
   Scenario: Retrieving the details of a non-existing file
 
     Given the user is authorized to read:files
-      And the user wants to request the file identified by 123456ee-0000-1111-2222-2faf7fa8ded6
+      And the user wants to request the file identified by 32bd31f4-d66e-41ca-8c8e-13e399f27045
 
      When calling the retrieve file details endpoint
 
@@ -120,7 +120,7 @@ Feature: Test scenarios for file handling endpoints
   @NegativeScenario
   Scenario: Downloading the given file is rejected if it does not exist
 
-    Given the user wants to request the file identified by 123456ee-0000-1111-2222-2faf7fa8ded6/test.jpg
+    Given the user wants to request the file identified by 32bd31f4-d66e-41ca-8c8e-13e399f27045/test.jpg
 
      When calling the download endpoint
 
@@ -162,7 +162,7 @@ Feature: Test scenarios for file handling endpoints
   Scenario: Requesting metadata update for a non-existing file
 
     Given the user is authorized to write:files
-      And the user wants to request the file identified by 123456ee-0000-1111-2222-2faf7fa8ded6
+      And the user wants to request the file identified by 32bd31f4-d66e-41ca-8c8e-13e399f27045
       And the user sets the originalFilename to "new_original_filename.jpg"
       And the user sets the description to "New Description"
 
@@ -375,7 +375,7 @@ Feature: Test scenarios for file handling endpoints
   Scenario: Deleting a non-existing file is rejected
 
     Given the user is authorized to write:files
-      And the user wants to request the file identified by 123456ee-0000-1111-2222-2faf7fa8ded6
+      And the user wants to request the file identified by 32bd31f4-d66e-41ca-8c8e-13e399f27045
 
      When calling the delete file endpoint
 
